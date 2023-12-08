@@ -18,6 +18,12 @@ class AdminUser extends Model
         'create_time'
     ];
 
+    public function find_by_username($userName) {
+        $map['email'] = $userName;
+
+        return $this->where($map)->first();
+    }
+
     public function find_by_token($token) {
         $map['token'] = $token;
 
