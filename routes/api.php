@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\KYCInformationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,4 @@ Route::post('login', [AuthController::class, 'authenticateAdminUser']);
 
 Route::middleware('authToken')->post('get-kyc-list', [KYCInformationController::class, 'getAllKYCInfoList']);
 Route::middleware('authToken')->post('update-kyc', [KYCInformationController::class, 'updateKYCInformations']);
+Route::middleware('authToken')->post('add-category', [CategoryController::class, 'addNewCategory']);
