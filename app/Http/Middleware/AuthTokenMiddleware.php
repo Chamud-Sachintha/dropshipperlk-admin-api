@@ -28,7 +28,7 @@ class AuthTokenMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if ((is_null($request->token) || empty($request->token)) && (is_null($request->flag) || empty($request->flag))) {
+        if ((is_null($request->token) || empty($request->token))) {
             return response()->json(['error' => 'Unauthorized'], 401);
         } else {
 

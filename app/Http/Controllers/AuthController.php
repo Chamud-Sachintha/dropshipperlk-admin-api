@@ -21,7 +21,7 @@ class AuthController extends Controller
     public function authenticateAdminUser(Request $request) {
 
         $userName = (is_null($request->userName) || empty($request->userName)) ? "" : $request->userName;
-        $password = (is_null($request->password) || empty($request->pasword)) ? "" : $request->password;
+        $password = (is_null($request->password) || empty($request->password)) ? "" : $request->password;
 
         if ($userName == "") {
             return $this->AppHelper->responseMessageHandle(0, "Username is required.");
@@ -33,7 +33,15 @@ class AuthController extends Controller
                 $user = $this->AdminUser->find_by_username($userName);
 
                 if ($user && Hash::check($password, $user['password'])) {
-                    return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $user);
+
+                    $token = $this->AppHelper->generateAuthToken($user);
+
+                    $tokenInfo = array();
+                    $tokenInfo['token'] = $token;
+                    $tokenInfo['loginTime'] = $this->AppHelper->day_time();
+                    $token_time = $this->AdminUser->update_login_token($user['id'], $tokenInfo);
+
+                    return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $user, $token);
                 } else {
                     return $this->AppHelper->responseMessageHandle(0, "Invalid Credentials");
                 }
