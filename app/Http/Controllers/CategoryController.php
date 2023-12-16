@@ -23,7 +23,7 @@ class CategoryController extends Controller
 
         $categoryName = (is_null($request->categoryName) || empty($request->categoryName)) ? "" : $request->categoryName;
         $status = (is_null($request->status) || empty($request->status)) ? "" : $request->status;
-        $description = (is_null($request->description) || empty($request->description)) ? "" : $request->decsription;
+        $description = (is_null($request->description) || empty($request->description)) ? "" : $request->description;
 
         if ($request_token == "") {
             return $this->AppHelper->responseMessageHandle(0, "Token is required");
@@ -53,6 +53,33 @@ class CategoryController extends Controller
                         return $this->AppHelper->responseMessageHandle(0, "Error Occured.");
                     }
                 }
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
+    public function getAllCategoryList(Request $request) {
+
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else {
+
+            try {
+                $resp = $this->Category->find_all();
+
+                $categoryList = array();
+                foreach ($resp as $key => $value) {
+                    $categoryList[$key]['id'] = $value['id'];
+                    $categoryList[$key]['categoryName'] = $value['category_name'];
+                    $categoryList[$key]['status'] = $value['status'];
+                    $categoryList[$key]['description'] = $value['description'];
+                    $categoryList[$key]['createTime'] = $value['create_time'];
+                }
+
+                return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $categoryList);
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }

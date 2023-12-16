@@ -30,4 +30,16 @@ class Category extends Model
 
         return $this->where($map)->first();
     }
+
+    public function find_by_id($cid) {
+        $map['id'] = $cid;
+
+        return $this->where($map)->first();
+    }
+
+    public function find_all() {
+        $map['status'] = 1;
+
+        return $this->where($map)->get();
+    }
 }
