@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\KYCInformationController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,3 +30,5 @@ Route::middleware('authToken')->post('update-kyc', [KYCInformationController::cl
 Route::middleware('authToken')->post('add-category', [CategoryController::class, 'addNewCategory']);
 Route::middleware('authToken')->post('add-product', [ProductController::class, 'addNewProduct']);
 Route::middleware('authToken')->post('get-category-list', [CategoryController::class, 'getAllCategoryList']);
+Route::middleware('authToken')->post('get-order-requests', [OrderController::class, 'getAllOngoingOrderList']);
+Route::middleware('authToken')->post('get-order-info-by-id', [OrderController::class, 'getOrderInfoByOrderId']);

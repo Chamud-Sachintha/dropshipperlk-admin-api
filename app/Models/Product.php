@@ -20,6 +20,7 @@ class Product extends Model
         'description',
         'supplier_name',
         'stock_count',
+        'images',
         'create_time'
     ];
 
@@ -27,15 +28,26 @@ class Product extends Model
         $map['product_name'] = $productInfo['productName'];
         $map['price'] = $productInfo['price'];
         $map['category'] = $productInfo['category'];
-        $map['team_commision'] = $productInfo['team_commision'];
+        $map['team_commision'] = $productInfo['teamCommision'];
         $map['direct_commision'] = $productInfo['directCommision'];
         $map['is_store_pick'] = $productInfo['isStorePick'];
         $map['waranty'] = $productInfo['waranty'];
         $map['description'] = $productInfo['description'];
-        $map['supplier_name'] = $productInfo['suppierName'];
+        $map['supplier_name'] = $productInfo['supplierName'];
         $map['stock_count'] = $productInfo['stockCount'];
+        $map['images'] = $productInfo['images'];
         $map['create_time'] = $productInfo['createTime'];
 
         return $this->create($map);
+    }
+
+    public function find_by_id($pid) {
+        $map['id'] = $pid;
+
+        return $this->where($map)->first();
+    }
+
+    public function find_all() {
+       return  $this->all();
     }
 }
