@@ -21,7 +21,7 @@ class Order extends Model
         'contact_2',
         'quantity',
         'total_amount',
-        'payment_method',
+        'payment_method',                       // 1- bank dep 2- cod 3- koko
         'payment_status',                       // 0- pending 1- paid
         'order_status',                         // 0 - pending 1- hold 2- packaging 3- cancel 4- in courier 5- delivered
         'tracking_number',
@@ -39,5 +39,12 @@ class Order extends Model
         $map['id'] = $oid;
 
         return $this->where($map)->first();
+    }
+
+    public function update_pay_status_by_order($info) {
+        $map['id'] = $info['orderId'];
+        $map1['payment_status'] = $info['paymentStatus'];
+
+        return $this->where($map)->update($map1);
     }
 }

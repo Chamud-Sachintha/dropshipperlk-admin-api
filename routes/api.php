@@ -32,3 +32,5 @@ Route::middleware('authToken')->post('add-product', [ProductController::class, '
 Route::middleware('authToken')->post('get-category-list', [CategoryController::class, 'getAllCategoryList']);
 Route::middleware('authToken')->post('get-order-requests', [OrderController::class, 'getAllOngoingOrderList']);
 Route::middleware('authToken')->post('get-order-info-by-id', [OrderController::class, 'getOrderInfoByOrderId']);
+
+Route::middleware('authToken')->post('update-pay-status', [OrderController::class, 'updatePaymentStatus']);

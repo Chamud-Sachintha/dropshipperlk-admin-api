@@ -50,7 +50,7 @@ class OrderController extends Controller
 
                     if ($value['payment_status'] == 0) {
                         $dataList[$key]['paymentStatus'] = "Pending";
-                    } else if ($value['payment_statis'] == 1) {
+                    } else if ($value['payment_status'] == 1) {
                         $dataList[$key]['paymentStatus'] = "Paid";
                     } else {
                         $dataList[$key]['paymentStatus'] = "Refunded";
@@ -97,12 +97,61 @@ class OrderController extends Controller
 
                     $dataList = array();
                     $dataList['productName'] = $product_info->product_name;
+                    $dataList['totalAmount'] = $order_info->total_amount;
+                    $dataList['quantity'] = $order_info->quantity;
+                    $dataList['bankSlip'] = null;
 
+                    if ($order_info->payment_method == 1) {
+                        $dataList['paymentMethod'] = "Bank Deposit";
+                        $dataList['bankSlip'] = $order_info['bank_slip'];
+                    } else if ($order_info->payment_method == 2) {
+                        $dataList['paymentMethod'] = "Cash On Delivery";
+                    } else {
+                        $dataList['paymentMethod'] = "KOKO Payment";
+                    }
+                    
                     return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
                 }
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
         }
+    }
+
+    public function updatePaymentStatus(Request $request) {
+
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+        $orderId = (is_null($request->orderId) || empty($request->orderId)) ? "" : $request->orderId;
+        $paymentStatus = (is_null($request->paymentStatus) || empty($request->paymentStatus)) ? "" : $request->paymentStatus;
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else if ($orderId == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Order Id is required.");
+        } else if ($paymentStatus == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Payment Status is required.");
+        } else {
+
+            try {
+                $info = array();
+
+                $info['orderId'] = $orderId;
+                $info['paymentStatus'] = $paymentStatus;
+
+                $resp = $this->Order->update_pay_status_by_order($info);
+
+                if ($resp) {
+                    return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
+                } else {
+                    return $this->AppHelper->responseMessageHandle(0, "Error Occured.");
+                }
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
+    public function updateOrderStatus(Request $request) {
+
     }
 }
