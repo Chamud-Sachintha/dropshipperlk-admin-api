@@ -109,7 +109,27 @@ class OrderController extends Controller
                     } else {
                         $dataList['paymentMethod'] = "KOKO Payment";
                     }
-                    
+
+                    if ($order_info->payment_status == 0) {
+                        $dataList['paymentStatus'] = "Pending";
+                    } else {
+                        $dataList['paymentStatus'] = "Paid";
+                    }
+
+                    if ($order_info['order_status'] == 0) {
+                        $dataList['orderStatus'] = "Pending";
+                    } else if ($order_info['order_status'] == 1) {
+                        $dataList['orderStatus'] = "Hold";
+                    } else if ($order_info['order_status'] == 2) {
+                        $dataList['orderStatus'] = "Packaging";
+                    } else if ($order_info['order_status'] == 3) {
+                        $dataList['orderStatus'] = "Cancel";
+                    } else if ($order_info['order_status'] == 4) {
+                        $dataList['orderStatus'] = "In Courier";
+                    } else {
+                        $dataList['orderStatus'] = "Delivered";
+                    }
+
                     return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
                 }
             } catch (\Exception $e) {
@@ -153,5 +173,65 @@ class OrderController extends Controller
 
     public function updateOrderStatus(Request $request) {
 
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+        $orderId = (is_null($request->orderId) || empty($request->orderId)) ? "" : $request->orderId;
+        $orderStatus = (is_null($request->orderStatus) || empty($request->orderStatus)) ? "" : $request->orderStatus;
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else if ($orderId == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Order Id is required.");
+        } else if ($orderStatus == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Order Status is required.");
+        } else {
+
+            try {
+                $info = array();
+                $info['orderId'] = $orderId;
+                $info['orderStatus'] = $orderStatus;
+
+                $resp = $this->Order->update_order_status_by_order($info);
+
+                if ($resp) {
+                    return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
+                } else {
+                    return $this->AppHelper->responseMessageHandle(0, "Error Occured.");
+                }
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
+    public function updateTrackingNumberOfOrder(Request $request) {
+
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+        $orderId = (is_null($request->orderId) || empty($request->orderId)) ? "" : $request->orderId;
+        $trackingNumber = (is_null($request->trackingNumber) || empty($request->trackingNumber)) ? "" : $request->trackingNumber;
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else if ($orderId == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Order Id is required.");
+        } else if ($trackingNumber == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Tracking Number is required.");
+        } else {
+
+            try {
+                $info = array();
+                $info['orderId'] = $orderId;
+                $info['trackingNumber'] = $trackingNumber;
+
+                $resp = $this->Order->set_tracking_number_by_order($info);
+
+                if ($resp) {
+                    return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
+                } else {
+                    return $this->AppHelper->responseMessageHandle(0, "Error Occured.");
+                }
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
     }
 }

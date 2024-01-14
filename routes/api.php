@@ -34,3 +34,5 @@ Route::middleware('authToken')->post('get-order-requests', [OrderController::cla
 Route::middleware('authToken')->post('get-order-info-by-id', [OrderController::class, 'getOrderInfoByOrderId']);
 
 Route::middleware('authToken')->post('update-pay-status', [OrderController::class, 'updatePaymentStatus']);
+Route::middleware('authToken')->post('update-order_status', [OrderController::class, 'updateOrderStatus']);
+Route::middleware('authToken')->post('set-tracking-number', [OrderController::class, 'updateTrackingNumberOfOrder']);
