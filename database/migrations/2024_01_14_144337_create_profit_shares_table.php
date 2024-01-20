@@ -20,6 +20,7 @@ class CreateProfitSharesTable extends Migration
             $table->float('product_price');
             $table->float('resell_price');
             $table->integer('quantity');
+            $table->float('delivery_charge');
             $table->float('total_amount');
             $table->float('profit');
             $table->float('profit_total');

@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Helpers\AppHelper;
 use App\Models\Order;
+use App\Models\OrderCancle;
 use App\Models\Product;
+use App\Models\ProfitShare;
 use App\Models\Reseller;
+use App\Models\ResellProduct;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -14,6 +17,9 @@ class OrderController extends Controller
     private $Order;
     private $Product;
     private $Reseller;
+    private $OrderCancleLog;
+    private $ProfitShare;
+    private $ResellProduct;
 
     public function __construct()
     {
@@ -21,6 +27,9 @@ class OrderController extends Controller
         $this->Order = new Order();
         $this->Product = new Product();
         $this->Reseller = new Reseller();
+        $this->OrderCancleLog = new OrderCancle();
+        $this->ProfitShare = new ProfitShare();
+        $this->ResellProduct = new ResellProduct();
     }
 
     public function getAllOngoingOrderList(Request $request) {
@@ -100,6 +109,8 @@ class OrderController extends Controller
                     $dataList['totalAmount'] = $order_info->total_amount;
                     $dataList['quantity'] = $order_info->quantity;
                     $dataList['bankSlip'] = null;
+                    $dataList['orderCancled'] = 0;
+                    $dataList['refundNotice'] = 0;
 
                     if ($order_info->payment_method == 1) {
                         $dataList['paymentMethod'] = "Bank Deposit";
@@ -112,8 +123,10 @@ class OrderController extends Controller
 
                     if ($order_info->payment_status == 0) {
                         $dataList['paymentStatus'] = "Pending";
-                    } else {
+                    } else if ($order_info->payment_status == 1) {
                         $dataList['paymentStatus'] = "Paid";
+                    } else {
+                        $dataList['paymentStatus'] = "Refunded";
                     }
 
                     if ($order_info['order_status'] == 0) {
@@ -123,7 +136,13 @@ class OrderController extends Controller
                     } else if ($order_info['order_status'] == 2) {
                         $dataList['orderStatus'] = "Packaging";
                     } else if ($order_info['order_status'] == 3) {
+                        $dataList['orderCancled'] = 1;
                         $dataList['orderStatus'] = "Cancel";
+
+                        if ($order_info->payment_status != 2) {
+                            $dataList['refundNotice'] = 1;
+                        }
+
                     } else if ($order_info['order_status'] == 4) {
                         $dataList['orderStatus'] = "In Courier";
                     } else {
@@ -193,6 +212,65 @@ class OrderController extends Controller
                 $resp = $this->Order->update_order_status_by_order($info);
 
                 if ($resp) {
+
+                    $profitShareInfo = array();
+
+                    if ($orderStatus == 5) {
+                        $order_info = $this->Order->find_by_order_id($orderId);
+                        $product_info = $this->Product->find_by_id($order_info['product_id']);
+                        $resell_info = $this->ResellProduct->get_by_seller_and_pid($order_info['reseller_id'], $order_info['product_id']);
+                        $reseller_info = $this->Reseller->find_by_id($order_info['reseller_info']);
+
+                        $profitShareInfo['resellerId'] = $order_info['reseller_id'];
+                        $profitShareInfo['productId'] = $order_info['product_id'];
+                        $profitShareInfo['productPrice'] = $product_info['price'];
+                        $profitShareInfo['resellPrice'] = $resell_info['resell_price'];
+                        $profitShareInfo['quantity'] = $order_info['quantity'];
+                        $profitShareInfo['totalAmount'] = $order_info['total_amount'];
+
+                        $is_city_colombo = $this->isCityinsideColombo($order_info['city']);
+                        $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
+
+                        $profit = ($resell_info['resell_price'] - $product_info['price']) - $courir_charge;
+
+                        $direct_commision = ($product_info['price'] * ($product_info['direct_commision'] / 100));
+
+                        $profitShareInfo['deliveryCharges'] = $courir_charge;
+                        $profitShareInfo['directCommision'] = $direct_commision;
+                        $profitShareInfo['teamCommision'] = 0;
+                        $profitShareInfo['profit'] = ($profit + $direct_commision);
+
+                        $profitShareInfo['profitTotal'] = ($reseller_info['profit_total'] + $profit);
+                        $profitShareInfo['createTime'] = $this->AppHelper->get_date_and_time();
+                        
+                        $ref_list = $this->Reseller->get_ref_list_by_seller($reseller_info['code']);
+
+                        $profit_log = $this->ProfitShare->add_log($profitShareInfo);
+
+                        $ref_profit_info = array();
+
+                        foreach ($ref_list as $key => $value) {
+                            $ref_profit_info['resellerId'] = $value['id'];
+                            $ref_profit_info['productId'] = $order_info['product_id'];
+                            $ref_profit_info['productPrice'] = 0;
+                            $ref_profit_info['resellPrice'] = 0;
+                            $ref_profit_info['quantity'] = 0;
+                            $ref_profit_info['totalAmount'] = 0;
+                            $ref_profit_info['deliveryCharges'] = 0;
+                            $ref_profit_info['directCommision'] = 0;
+
+                            $team_commision = ($product_info['price'] * ($product_info['team_commision'] / 100));
+
+                            $ref_profit_info['teamCommision'] = $team_commision;
+                            $ref_profit_info['profit'] = 0;
+    
+                            $ref_profit_info['profitTotal'] = ($value['profit_total'] + $team_commision);
+                            $ref_profit_info['createTime'] = $this->AppHelper->get_date_and_time();
+
+                            $profit_log = $this->ProfitShare->add_log($ref_profit_info);
+                        }
+                    }
+
                     return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
                 } else {
                     return $this->AppHelper->responseMessageHandle(0, "Error Occured.");
@@ -233,5 +311,52 @@ class OrderController extends Controller
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
         }
+    }
+
+    private function isCityinsideColombo($city) {
+        $colombo_cities = [
+            'Colombo-01',
+            'Colombo-02',
+            'Colombo-03',
+            'Colombo-04',
+            'Colombo-05',
+            'Colombo-06',
+            'Colombo-07',
+            'Colombo-08',
+            'Colombo-09',
+            'Colombo-10',
+            'Colombo-11',
+            'Colombo-12',
+            'Colombo-13',
+            'Colombo-14',
+            'Colombo-15',
+        ];
+
+        if (in_array($city, $colombo_cities)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function getCourierCharge($is_colombo, $product_weight) {
+
+        $default_charge = 300;
+        $weight_in_kg = ($product_weight) / 1000;
+
+        if ($weight_in_kg > 1) {
+            $remaining = $weight_in_kg - 1;
+            $round_remaining = ceil($remaining);
+            
+            if ($round_remaining > 0) {
+                $default_charge += ($round_remaining * 50);
+            }
+        }
+
+        if (!$is_colombo) {
+            $default_charge += 50;
+        }
+
+        return $default_charge;
     }
 }

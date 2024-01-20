@@ -21,6 +21,7 @@ class Product extends Model
         'supplier_name',
         'stock_count',
         'images',
+        'weight',
         'create_time'
     ];
 
@@ -33,6 +34,7 @@ class Product extends Model
         $map['is_store_pick'] = $productInfo['isStorePick'];
         $map['waranty'] = $productInfo['waranty'];
         $map['description'] = $productInfo['description'];
+        $map['weight'] = $productInfo['weight'];
         $map['supplier_name'] = $productInfo['supplierName'];
         $map['stock_count'] = $productInfo['stockCount'];
         $map['images'] = $productInfo['images'];

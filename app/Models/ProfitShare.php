@@ -16,6 +16,9 @@ class ProfitShare extends Model
         'resell_price',
         'quantity',
         'total_amount',
+        'delivery_charge',
+        'direct_commision',
+        'team_commision',
         'profit',
         'profit_total',
         'create_time'
@@ -27,6 +30,9 @@ class ProfitShare extends Model
         $map['product_price'] = $info['productPrice'];
         $map['resell_price'] = $info['resellPrice'];
         $map['quantity'] = $info['quantity'];
+        $map['delivery_charge'] = $info['deliveryCharge'];
+        $map['direct_commision'] = $info['directCommision'];
+        $map['team_commision'] = $info['teamCommision'];
         $map['total_amount'] = $info['totalAmount'];
         $map['profit'] = $info['profit'];
         $map['profit_total'] = $info['profitTotal'];

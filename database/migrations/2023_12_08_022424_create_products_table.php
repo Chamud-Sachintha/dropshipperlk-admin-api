@@ -23,6 +23,7 @@ class CreateProductsTable extends Migration
             $table->integer('is_store_pick');
             $table->integer('waranty');
             $table->string('description');
+            $table->string('weight');
             $table->string('supplier_name');
             $table->integer('stock_count');
             $table->string('images');

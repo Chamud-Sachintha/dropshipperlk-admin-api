@@ -20,6 +20,7 @@ class Reseller extends Model
         'token',
         'login_time',
         'ref_code',
+        'profit_total',
         'code',
         'create_time'
     ];
@@ -28,5 +29,11 @@ class Reseller extends Model
         $map['id'] = $sellerId;
 
         return $this->where($map)->first();
+    }
+
+    public function get_ref_list_by_seller($sellerRef) {
+        $map['ref_code'] = $sellerRef;
+
+        return $this->where($map)->get();
     }
 }

@@ -32,6 +32,7 @@ class ProductController extends Controller
         $isStorePick = (is_null($request->isStorePick) || empty($request->isStorePick)) ? "" : $request->isStorePick;
         $waranty = (is_null($request->warranty) || empty($request->warranty)) ? "" : $request->warranty;
         $description = (is_null($request->description) || empty($request->description)) ? "" : $request->description;
+        $weight = (is_null($request->weight) || empty($request->weight)) ? "" : $request->weight;
         $supplierName = (is_null($request->supplierName) || empty($request->supplierName)) ? "" : $request->supplierName;
         $stockCount = (is_null($request->stockCount) || empty($request->stockCount)) ? "" : $request->stockCount;
 
@@ -74,6 +75,7 @@ class ProductController extends Controller
                     $productInfo['isStorePick'] = ($isStorePick ? 1 : 0);
                     $productInfo['waranty'] = $waranty;
                     $productInfo['description'] = $description;
+                    $productInfo['weight'] = $weight;
                     $productInfo['supplierName'] = $supplierName;
                     $productInfo['stockCount'] = $stockCount;
 

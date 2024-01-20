@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\KYCInformationController;
+use App\Http\Controllers\OrderCancleController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
@@ -36,3 +37,4 @@ Route::middleware('authToken')->post('get-order-info-by-id', [OrderController::c
 Route::middleware('authToken')->post('update-pay-status', [OrderController::class, 'updatePaymentStatus']);
 Route::middleware('authToken')->post('update-order_status', [OrderController::class, 'updateOrderStatus']);
 Route::middleware('authToken')->post('set-tracking-number', [OrderController::class, 'updateTrackingNumberOfOrder']);
+Route::middleware('authToken')->post('refund-approve', [OrderCancleController::class, 'refundApprove']);

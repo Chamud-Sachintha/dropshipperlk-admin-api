@@ -30,9 +30,9 @@ class Order extends Model
     ];
 
     public function get_all_uncomplete() {
-        $map['order_status'] = array('order_status', '!=', 5);
+        // $map['order_status'] = array('order_status', '!=', 5);
 
-        return $this->where($map)->get();
+        return $this->whereNotIn('order_status', [5])->get();
     }
 
     public function find_by_order_id($oid) {
@@ -58,6 +58,13 @@ class Order extends Model
     public function set_tracking_number_by_order($info) {
         $map['id'] = $info['orderId'];
         $map1['tracking_number'] = $info['trackingNumber'];
+
+        return $this->where($map)->update($map1);
+    }
+
+    public function update_refund_by_order($info) {
+        $map['id'] = $info['orderId'];
+        $map1['payment_status'] = $info['paymentStatus'];
 
         return $this->where($map)->update($map1);
     }
