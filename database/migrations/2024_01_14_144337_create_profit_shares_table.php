@@ -21,6 +21,8 @@ class CreateProfitSharesTable extends Migration
             $table->float('resell_price');
             $table->integer('quantity');
             $table->float('delivery_charge');
+            $table->float('direct_commision');
+            $table->float('team_commision');
             $table->float('total_amount');
             $table->float('profit');
             $table->float('profit_total');

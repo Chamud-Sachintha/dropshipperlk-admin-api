@@ -36,4 +36,17 @@ class Reseller extends Model
 
         return $this->where($map)->get();
     }
+
+    public function set_profit_total($info) {
+        $map['id'] = $info['resellerId'];
+        $map1['profit_total'] = $info['profitTotal'];
+
+        $resp = $this->where($map)->update($map1);
+
+        if ($resp) {
+            return $this->where($map)->first();
+        } else {
+            return null;
+        }
+    }
 }
