@@ -49,4 +49,8 @@ class Reseller extends Model
             return null;
         }
     }
+
+    public function find_all() {
+        return $this->all();
+    }
 }

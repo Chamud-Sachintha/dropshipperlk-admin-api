@@ -120,8 +120,15 @@ class ProductController extends Controller
 
                 $dataList = array();
                 foreach ($resp as $key => $value) {
-                    $dataList[$key]['productName'] = $value[''];
+                    $dataList[$key]['productName'] = $value['product_name'];
+                    $dataList[$key]['image'] = json_decode($value['images'])->image0;
+                    $dataList[$key]['categoryName'] = $value['category'];
+                    $dataList[$key]['description'] = $value['description'];
+                    $dataList[$key]['price'] = $value['price'];
+                    $dataList[$key]['createTime'] = $value['create_time'];
                 }
+
+                return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }

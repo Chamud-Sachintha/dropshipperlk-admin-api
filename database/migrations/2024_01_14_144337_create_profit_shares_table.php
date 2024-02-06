@@ -16,6 +16,8 @@ class CreateProfitSharesTable extends Migration
         Schema::create('profit_shares', function (Blueprint $table) {
             $table->id();
             $table->string('reseller_id');
+            $table->string('order_id');
+            $table->integer('type');
             $table->string('product_id');
             $table->float('product_price');
             $table->float('resell_price');

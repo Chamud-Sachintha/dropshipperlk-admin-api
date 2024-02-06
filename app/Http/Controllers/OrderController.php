@@ -222,6 +222,7 @@ class OrderController extends Controller
                         $reseller_info = $this->Reseller->find_by_id($order_info['reseller_id']);
 
                         $profitShareInfo['resellerId'] = $order_info['reseller_id'];
+                        $profitShareInfo['orderId'] = $order_info['id'];
                         $profitShareInfo['productId'] = $order_info['product_id'];
                         $profitShareInfo['productPrice'] = $product_info['price'];
                         $profitShareInfo['resellPrice'] = $resell_info['price'];
@@ -257,7 +258,7 @@ class OrderController extends Controller
 
                             foreach ($ref_list as $key => $value) {
                                 $ref_profit_info['resellerId'] = $value['id'];
-                                
+                                $ref_profit_info['orderId'] = 0;
                                 $ref_profit_info['productId'] = $order_info['product_id'];
                                 $ref_profit_info['productPrice'] = 0;
                                 $ref_profit_info['resellPrice'] = 0;
