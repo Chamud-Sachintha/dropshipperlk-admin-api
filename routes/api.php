@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderCancleController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayoutLogController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SiteBannerController;
 use App\Http\Controllers\WayBillPdfPrintController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -48,3 +49,5 @@ Route::middleware('authToken')->post('get-seller-list', [PayoutLogController::cl
 Route::middleware('authToken')->post('get-payout-info', [PayoutLogController::class, 'getPayOutInfoBySeller']);
 Route::middleware('authToken')->post('view-pdf', [WayBillPdfPrintController::class, 'printWayBillPdf']);
 Route::middleware('authToken')->post('dashboard-data', [DashboardController::class, 'getDashboardData']);
+
+Route::middleware('authToken')->post('add-site-banner', [SiteBannerController::class, 'addSiteBannerImage']);

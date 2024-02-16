@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AppHelper {
 
@@ -37,6 +38,17 @@ class AppHelper {
 
     public function get_date_and_time() {
         return strtotime("now");
+    }
+
+    public function decodeImage($imageData, $dir) {
+
+        $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $imageData));
+        $imageFileName = 'image_' . time() . Str::random(5) . '.png';
+
+        // Storage::kyc('kyc')->put($imageFileName, $image);
+        file_put_contents(public_path() . '/' . $dir . '/' . $imageFileName, $image);
+
+        return $imageFileName;
     }
 }
 
