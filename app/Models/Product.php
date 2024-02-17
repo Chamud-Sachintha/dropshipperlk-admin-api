@@ -43,6 +43,22 @@ class Product extends Model
         return $this->create($map);
     }
 
+    public function update_by_id($productInfo) {
+        $map1['id'] = $productInfo['productId'];
+        $map['product_name'] = $productInfo['productName'];
+        $map['price'] = $productInfo['price'];
+        $map['category'] = $productInfo['category'];
+        $map['team_commision'] = $productInfo['teamCommision'];
+        $map['direct_commision'] = $productInfo['directCommision'];
+        $map['is_store_pick'] = $productInfo['isStorePick'];
+        $map['waranty'] = $productInfo['waranty'];
+        $map['description'] = $productInfo['description'];
+        $map['weight'] = $productInfo['weight'];
+        $map['supplier_name'] = $productInfo['supplierName'];
+
+        return $this->where($map1)->update($map);
+    }
+
     public function find_by_id($pid) {
         $map['id'] = $pid;
 

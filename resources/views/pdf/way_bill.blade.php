@@ -46,7 +46,7 @@
 <body>
     <div class="row">
         @foreach ($data as $item)
-            <div class="col-6">
+            <div class="col-6 mb-3">
                 <table class="tg">
                     <thead>
                         <tr>

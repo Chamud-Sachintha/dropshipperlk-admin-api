@@ -111,6 +111,7 @@ class OrderController extends Controller
                     $dataList['bankSlip'] = null;
                     $dataList['orderCancled'] = 0;
                     $dataList['refundNotice'] = 0;
+                    $dataList['images'] = json_decode($product_info['images']);
 
                     if ($order_info->payment_method == 1) {
                         $dataList['paymentMethod'] = "Bank Deposit";

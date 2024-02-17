@@ -135,6 +135,72 @@ class ProductController extends Controller
         }
     }
 
+    public function updateProductInfo(Request $request) {
+        $productId = (is_null($request->productId) || empty($request->productId)) ? "" : $request->productId;
+        $productName = (is_null($request->productName) || empty($request->productName)) ? "" : $request->productName;
+        $price = (is_null($request->price) || empty($request->price)) ? "" : $request->price;
+        $category = (is_null($request->category) || empty($request->category)) ? "" : $request->category;
+        $teamCommision = (is_null($request->teamCommision) || empty($request->teamCommision)) ? "" : $request->teamCommision;
+        $directCommsion = (is_null($request->directCommision) || empty($request->directCommision)) ? "" : $request->directCommision;
+        $isStorePick = (is_null($request->isStorePick) || empty($request->isStorePick)) ? "" : $request->isStorePick;
+        $waranty = (is_null($request->warranty) || empty($request->warranty)) ? "" : $request->warranty;
+        $description = (is_null($request->description) || empty($request->description)) ? "" : $request->description;
+        $weight = (is_null($request->weight) || empty($request->weight)) ? "" : $request->weight;
+        $supplierName = (is_null($request->supplierName) || empty($request->supplierName)) ? "" : $request->supplierName;
+
+        if ($productName == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Product Name is required.");
+        } else if ($price == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Price is required.");
+        } else if ($category == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Category is required.");
+        } else if ($teamCommision == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Team Commision is required.");
+        } else if ($directCommsion == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Direct Commision is required.");
+        } else if ($waranty == "") {
+            return $this->AppHelper->responseMessageHandle(0, "waranty is required.");
+        } else if ($description == "") {
+            return $this->AppHelper->responseMessageHandle(0, "description is required.");
+        } else if ($supplierName == "") {
+            return $this->AppHelper->responseMessageHandle(0, "supplier Name is required.");
+        } else {
+
+            try {
+                $isValidCategory = $this->validateCategory($category);
+
+                if ($isValidCategory) {
+                    $productInfo = array();
+                    $productInfo['productId'] = $productId;
+                    $productInfo['productName'] = $productName;
+                    $productInfo['price'] = $price;
+                    $productInfo['category'] = $category;
+                    $productInfo['teamCommision'] = $teamCommision;
+                    $productInfo['directCommision'] = $directCommsion;
+                    $productInfo['isStorePick'] = ($isStorePick ? 1 : 0);
+                    $productInfo['waranty'] = $waranty;
+                    $productInfo['description'] = $description;
+                    $productInfo['weight'] = $weight;
+                    $productInfo['supplierName'] = $supplierName;
+
+                    $resp = $this->Product->update_by_id($productInfo);
+
+                    if ($resp) {
+                        return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
+                    } else {
+                        return $this->AppHelper->responseMessageHandle(0, "Error Occureed");
+                    }
+                }
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
+    public function deleteProduct(Request $request) {
+
+    }
+
     private function validateCategory($categoryId) {
 
         $isValidCategory = false;
