@@ -32,7 +32,9 @@ class Order extends Model
     public function get_all_uncomplete() {
         // $map['order_status'] = array('order_status', '!=', 5);
 
-        return $this->whereNotIn('order_status', [5])->get();
+        // return $this->whereNotIn('order_status', [5])->get();
+
+        return $this->all();
     }
 
     public function find_by_order_id($oid) {

@@ -120,9 +120,11 @@ class ProductController extends Controller
 
                 $dataList = array();
                 foreach ($resp as $key => $value) {
+                    $category_info = $this->Category->find_by_id($value['category']);
+
                     $dataList[$key]['productName'] = $value['product_name'];
                     $dataList[$key]['image'] = json_decode($value['images'])->image0;
-                    $dataList[$key]['categoryName'] = $value['category'];
+                    $dataList[$key]['categoryName'] = $category_info['category_name'];
                     $dataList[$key]['description'] = $value['description'];
                     $dataList[$key]['price'] = $value['price'];
                     $dataList[$key]['createTime'] = $value['create_time'];
