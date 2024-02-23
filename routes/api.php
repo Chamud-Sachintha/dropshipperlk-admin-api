@@ -36,7 +36,7 @@ Route::middleware('authToken')->post('add-category', [CategoryController::class,
 Route::middleware('authToken')->post('add-product', [ProductController::class, 'addNewProduct']);
 Route::middleware('authToken')->post('get-category-list', [CategoryController::class, 'getAllCategoryList']);
 Route::middleware('authToken')->post('get-order-requests', [OrderController::class, 'getAllOngoingOrderList']);
-Route::middleware('authToken')->post('get-order-info-by-id', [OrderController::class, 'getOrderInfoByOrderId']);
+Route::middleware('authToken')->post('get-order-info-by-id', [OrderController::class, 'getOrderInfoListByOrderNumberNew']);
 Route::middleware('authToken')->post('get-product-list', [ProductController::class, 'getProductList']);
 
 Route::middleware('authToken')->post('update-pay-status', [OrderController::class, 'updatePaymentStatus']);
@@ -51,3 +51,5 @@ Route::middleware('authToken')->post('view-pdf', [WayBillPdfPrintController::cla
 Route::middleware('authToken')->post('dashboard-data', [DashboardController::class, 'getDashboardData']);
 
 Route::middleware('authToken')->post('add-site-banner', [SiteBannerController::class, 'addSiteBannerImage']);
+Route::middleware('authToken')->post('update-product', [ProductController::class, 'updateProductInfo']);
+Route::middleware('authToken')->post('get-product-info-by-id', [ProductController::class, 'getProductInfoById']);

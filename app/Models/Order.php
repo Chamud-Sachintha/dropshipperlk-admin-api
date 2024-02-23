@@ -43,6 +43,12 @@ class Order extends Model
         return $this->where($map)->first();
     }
 
+    public function get_order_by_order_number_new($orderNumber) {
+        $map['order'] = $orderNumber;
+
+        return $this->where($map)->get();
+    }
+
     public function update_pay_status_by_order($info) {
         $map['id'] = $info['orderId'];
         $map1['payment_status'] = $info['paymentStatus'];

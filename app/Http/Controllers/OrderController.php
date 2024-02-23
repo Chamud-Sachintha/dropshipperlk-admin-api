@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\AppHelper;
 use App\Models\Order;
 use App\Models\OrderCancle;
+use App\Models\OrderEn;
 use App\Models\Product;
 use App\Models\ProfitShare;
 use App\Models\Reseller;
@@ -20,6 +21,7 @@ class OrderController extends Controller
     private $OrderCancleLog;
     private $ProfitShare;
     private $ResellProduct;
+    private $OrderEn;
 
     public function __construct()
     {
@@ -30,6 +32,7 @@ class OrderController extends Controller
         $this->OrderCancleLog = new OrderCancle();
         $this->ProfitShare = new ProfitShare();
         $this->ResellProduct = new ResellProduct();
+        $this->OrderEn = new OrderEn();
     }
 
     public function getAllOngoingOrderList(Request $request) {
@@ -41,20 +44,21 @@ class OrderController extends Controller
         } else {
 
             try {
-                $resp = $this->Order->get_all_uncomplete();
+                // $resp = $this->Order->get_all_uncomplete();
+                $resp = $this->OrderEn->get_all_orders();
 
                 $dataList = array();
                 foreach ($resp as $key => $value) {
 
                     $reseller_info = $this->Reseller->find_by_id($value['reseller_id']);
-                    $product_info = $this->Product->find_by_id($value['product_id']);
+                    // $product_info = $this->Product->find_by_id($value['product_id']);
 
                     $dataList[$key]['id'] = $value['id'];
                     $dataList[$key]['order'] = $value['order'];
-                    $dataList[$key]['productName'] = $product_info['product_name'];
+                    // $dataList[$key]['productName'] = $product_info['product_name'];
                     $dataList[$key]['resellerName'] = $reseller_info['full_name'];
-                    $dataList[$key]['customerName'] = $value['name'];
-                    $dataList[$key]['quantity'] = $value['quantity'];
+                    // $dataList[$key]['customerName'] = $value['name'];
+                    // $dataList[$key]['quantity'] = $value['quantity'];
                     $dataList[$key]['totalAmount'] = $value['total_amount'];
 
                     if ($value['payment_status'] == 0) {
@@ -158,6 +162,83 @@ class OrderController extends Controller
         }
     }
 
+    public function getOrderInfoListByOrderNumberNew(Request $request) {
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+        $orderId = (is_null($request->orderId) || empty($request->orderId)) ? "" : $request->orderId;
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else if ($orderId == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else {
+
+            try {
+                $order = $this->OrderEn->get_by_id($orderId);
+                $order_info = $this->Order->get_order_by_order_number_new($order->order);
+
+                $direct_commision = 0;
+                $team_commision = 0;
+                $dataList = array();
+                foreach ($order_info as $key => $value) {
+                    $product_info = $this->Product->find_by_id($value['product_id']);
+                    $resell_info = $this->ResellProduct->find_by_pid_and_sid($value['reseller_id'], $value['product_id']);
+
+                    $dataList[$key]['productName'] = $product_info['product_name'];
+                    $dataList[$key]['productPrice'] = $product_info['price'];
+                    $dataList[$key]['resellPrice'] = $resell_info['price'];
+                    $dataList[$key]['quantity'] = $value['quantity'];
+                    $dataList[$key]['totalAmount'] = $value['total_amount'];
+
+                    $direct_commision += $product_info['direct_commision'];
+                    $team_commision += $product_info['team_commision'];
+                }
+
+                $order_info = $this->OrderEn->getOrderInfoByOrderNumber($order->order);
+
+                if ($order_info['payment_status'] == 0) {
+                    $dataList['paymentStatus'] = "Pending";
+                } else if ($order_info['payment_status'] == 1) {
+                    $dataList['paymentStatus'] = "Paid";
+                } else {
+                    $dataList['paymentStatus'] = "Refunded";
+                }
+
+                if ($order_info['order_status'] == 0) {
+                    $dataList['orderStatus'] = "Pending";
+                } else if ($order_info['order_status'] == 1) {
+                    $dataList['orderStatus'] = "Hold";
+                } else if ($order_info['order_status'] == 2) {
+                    $dataList['orderStatus'] = "Packaging";
+                } else if ($order_info['order_status'] == 3) {
+                    $dataList['orderStatus'] = "Cancle";
+                } else if ($order_info['order_status'] == 4) {
+                    $dataList['orderStatus'] = "In Courier";
+                } else {
+                    $dataList['orderStatus'] = "Delivered";
+                }
+
+                $dataList['orderCancled'] = 0;
+                $dataList['cancleOrder'] = 0;
+
+                if ($order_info['order_status'] < 4) {
+                    $dataList['cancleOrder'] = 1;
+                }
+
+                if ($order_info['order_status'] == 3) {
+                    $dataList['orderCancled'] = 1;
+                }
+
+                $dataList['directCommision'] = $direct_commision;
+                $dataList['teamCommision'] = $team_commision;
+                $dataList['totalAmount'] = $order_info['total_amount'];
+
+                return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
     public function updatePaymentStatus(Request $request) {
 
         $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
@@ -178,7 +259,7 @@ class OrderController extends Controller
                 $info['orderId'] = $orderId;
                 $info['paymentStatus'] = $paymentStatus;
 
-                $resp = $this->Order->update_pay_status_by_order($info);
+                $resp = $this->OrderEn->update_pay_status_by_order($info);
 
                 if ($resp) {
                     return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
@@ -205,92 +286,99 @@ class OrderController extends Controller
             return $this->AppHelper->responseMessageHandle(0, "Order Status is required.");
         } else {
 
-            // try {
+            try {
                 $info = array();
                 $info['orderId'] = $orderId;
                 $info['orderStatus'] = $orderStatus;
 
-                $resp = $this->Order->update_order_status_by_order($info);
+                // $resp = $this->Order->update_order_status_by_order($info);
+                $resp = $this->OrderEn->update_order_status_by_order($info);
 
                 if ($resp) {
 
                     $profitShareInfo = array();
 
                     if ($orderStatus == 5) {
-                        $order_info = $this->Order->find_by_order_id($orderId);
-                        $product_info = $this->Product->find_by_id($order_info['product_id']);
-                        $resell_info = $this->ResellProduct->get_by_seller_and_pid($order_info['reseller_id'], $order_info['product_id']);
-                        $reseller_info = $this->Reseller->find_by_id($order_info['reseller_id']);
+                        $order = $this->OrderEn->get_by_id($orderId);
 
-                        $profitShareInfo['resellerId'] = $order_info['reseller_id'];
-                        $profitShareInfo['orderId'] = $order_info['id'];
-                        $profitShareInfo['productId'] = $order_info['product_id'];
-                        $profitShareInfo['productPrice'] = $product_info['price'];
-                        $profitShareInfo['resellPrice'] = $resell_info['price'];
-                        $profitShareInfo['quantity'] = $order_info['quantity'];
-                        $profitShareInfo['totalAmount'] = $order_info['total_amount'];
+                        $order_info_p = $this->Order->get_order_by_order_number_new($order->order);
 
-                        $is_city_colombo = $this->isCityinsideColombo($order_info['city']);
-                        $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
+                        foreach ($order_info_p as $key => $order_info) {
+                            $product_info = $this->Product->find_by_id($order_info['product_id']);
+                            $resell_info = $this->ResellProduct->get_by_seller_and_pid($order_info['reseller_id'], $order_info['product_id']);
+                            $reseller_info = $this->Reseller->find_by_id($order_info['reseller_id']);
 
-                        // $profit = (($resell_info['price'] * $order_info['quantity']) - $product_info['price']) - $courir_charge;
-                        $profit = ($order_info['total_amount'] - ($product_info['price'] * $order_info['quantity'])) - $courir_charge;
+                            $profitShareInfo['resellerId'] = $order_info['reseller_id'];
+                            $profitShareInfo['orderId'] = $order_info['id'];
+                            $profitShareInfo['productId'] = $order_info['product_id'];
+                            $profitShareInfo['productPrice'] = $product_info['price'];
+                            $profitShareInfo['resellPrice'] = $resell_info['price'];
+                            $profitShareInfo['quantity'] = $order_info['quantity'];
+                            $profitShareInfo['totalAmount'] = $order_info['total_amount'];
 
-                        $direct_commision = ($product_info['price'] * ($product_info['direct_commision'] / 100));
+                            $is_city_colombo = $this->isCityinsideColombo($order_info['city']);
+                            $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
 
-                        $profitShareInfo['deliveryCharge'] = $courir_charge;
-                        $profitShareInfo['directCommision'] = $direct_commision;
-                        $profitShareInfo['teamCommision'] = 0;
-                        $profitShareInfo['profit'] = ($profit + $direct_commision);
+                            // $profit = (($resell_info['price'] * $order_info['quantity']) - $product_info['price']) - $courir_charge;
+                            $profit = ($order_info['total_amount'] - ($product_info['price'] * $order_info['quantity'])) - $courir_charge;
 
-                        $sellerProfitInfo = array();
-                        $sellerProfitInfo['resellerId'] = $order_info['reseller_id'];
-                        $sellerProfitInfo['profitTotal'] = ($reseller_info['profit_total'] + ($profit + $direct_commision));
-                        $set_profit_total = $this->Reseller->set_profit_total($sellerProfitInfo);
+                            $direct_commision = ($product_info['price'] * ($product_info['direct_commision'] / 100));
 
-                        if ($set_profit_total != null) {
-                            $profitShareInfo['profitTotal'] = $set_profit_total['profit_total'];
-                            $profitShareInfo['createTime'] = $this->AppHelper->get_date_and_time();
-                            
-                            $ref_list = $this->Reseller->get_ref_list_by_seller($reseller_info['code']);
-                            $profit_log = $this->ProfitShare->add_log($profitShareInfo);
+                            $profitShareInfo['deliveryCharge'] = $courir_charge;
+                            $profitShareInfo['directCommision'] = $direct_commision;
+                            $profitShareInfo['teamCommision'] = 0;
+                            $profitShareInfo['profit'] = ($profit + $direct_commision);
 
-                            $ref_profit_info = array();
+                            $sellerProfitInfo = array();
+                            $sellerProfitInfo['resellerId'] = $order_info['reseller_id'];
+                            $sellerProfitInfo['profitTotal'] = ($reseller_info['profit_total'] + ($profit + $direct_commision));
+                            $set_profit_total = $this->Reseller->set_profit_total($sellerProfitInfo);
 
-                            foreach ($ref_list as $key => $value) {
-                                $ref_profit_info['resellerId'] = $value['id'];
-                                $ref_profit_info['orderId'] = 0;
-                                $ref_profit_info['productId'] = $order_info['product_id'];
-                                $ref_profit_info['productPrice'] = 0;
-                                $ref_profit_info['resellPrice'] = 0;
-                                $ref_profit_info['quantity'] = 0;
-                                $ref_profit_info['totalAmount'] = 0;
-                                $ref_profit_info['deliveryCharge'] = 0;
-                                $ref_profit_info['directCommision'] = 0;
+                            if ($set_profit_total != null) {
+                                $profitShareInfo['profitTotal'] = $set_profit_total['profit_total'];
+                                $profitShareInfo['createTime'] = $this->AppHelper->get_date_and_time();
+                                
+                                $ref_list = $this->Reseller->get_ref_list_by_seller($reseller_info['code']);
+                                $profit_log = $this->ProfitShare->add_log($profitShareInfo);
 
-                                $team_commision = ($product_info['price'] * ($product_info['team_commision'] / 100));
+                                $ref_profit_info = array();
 
-                                $ref_profit_info['teamCommision'] = $team_commision;
-                                $ref_profit_info['profit'] = 0;
-        
-                                $ref_profit_info['profitTotal'] = ($value['profit_total'] + $team_commision);
-                                $ref_profit_info['createTime'] = $this->AppHelper->get_date_and_time();
+                                foreach ($ref_list as $key => $value) {
+                                    $ref_profit_info['resellerId'] = $value['id'];
+                                    $ref_profit_info['orderId'] = 0;
+                                    $ref_profit_info['productId'] = $order_info['product_id'];
+                                    $ref_profit_info['productPrice'] = 0;
+                                    $ref_profit_info['resellPrice'] = 0;
+                                    $ref_profit_info['quantity'] = 0;
+                                    $ref_profit_info['totalAmount'] = 0;
+                                    $ref_profit_info['deliveryCharge'] = 0;
+                                    $ref_profit_info['directCommision'] = 0;
 
-                                $profit_log = $this->ProfitShare->add_log($ref_profit_info);
-                                $sellerProfitInfo2['resellerId'] = $value['id'];
-                                $sellerProfitInfo2['profitTotal'] = ($value['profit_total'] + $team_commision);
-                                $set_profit_total2 = $this->Reseller->set_profit_total($sellerProfitInfo2);
+                                    $team_commision = ($product_info['price'] * ($product_info['team_commision'] / 100));
+
+                                    $ref_profit_info['teamCommision'] = $team_commision;
+                                    $ref_profit_info['profit'] = 0;
+            
+                                    $ref_profit_info['profitTotal'] = ($value['profit_total'] + $team_commision);
+                                    $ref_profit_info['createTime'] = $this->AppHelper->get_date_and_time();
+
+                                    $profit_log = $this->ProfitShare->add_log($ref_profit_info);
+                                    $sellerProfitInfo2['resellerId'] = $value['id'];
+                                    $sellerProfitInfo2['profitTotal'] = ($value['profit_total'] + $team_commision);
+                                    $set_profit_total2 = $this->Reseller->set_profit_total($sellerProfitInfo2);
+                                }
                             }
                         }
+                        
                     }
 
                     return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
                 } else {
                     return $this->AppHelper->responseMessageHandle(0, "Error Occured.");
                 }
-            // } catch (\Exception $e) {
-            //     return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
-            // }
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
         }
     }
 

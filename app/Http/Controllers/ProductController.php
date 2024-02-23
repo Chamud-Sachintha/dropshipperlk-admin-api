@@ -65,6 +65,12 @@ class ProductController extends Controller
             try {
                 $isValidCategory = $this->validateCategory($category);
 
+                $validate_pname = $this->Product->find_by_p_name($productName);
+
+                if ($validate_pname) {
+                    return $this->AppHelper->responseMessageHandle(0, "Already Added");
+                }
+
                 if ($isValidCategory) {
                     $productInfo = array();
                     $productInfo['productName'] = $productName;
@@ -122,6 +128,7 @@ class ProductController extends Controller
                 foreach ($resp as $key => $value) {
                     $category_info = $this->Category->find_by_id($value['category']);
 
+                    $dataList[$key]['id'] = $value['id'];
                     $dataList[$key]['productName'] = $value['product_name'];
                     $dataList[$key]['image'] = json_decode($value['images'])->image0;
                     $dataList[$key]['categoryName'] = $category_info['category_name'];
@@ -129,6 +136,29 @@ class ProductController extends Controller
                     $dataList[$key]['price'] = $value['price'];
                     $dataList[$key]['createTime'] = $value['create_time'];
                 }
+
+                return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
+    public function getProductInfoById(Request $request) {
+
+        $productId = (is_null($request->productId) || empty($request->productId)) ? "" : $request->productId;
+
+        if ($productId == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else {
+
+            try {
+                $resp = $this->Product->find_by_id($productId);
+
+                $dataList = array();
+                $dataList['productName'] = $resp['product_name'];
+                $dataList['description'] = $resp['description'];
+                $dataList['price'] = $resp['price'];
 
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
             } catch (\Exception $e) {
@@ -154,32 +184,35 @@ class ProductController extends Controller
             return $this->AppHelper->responseMessageHandle(0, "Product Name is required.");
         } else if ($price == "") {
             return $this->AppHelper->responseMessageHandle(0, "Price is required.");
-        } else if ($category == "") {
-            return $this->AppHelper->responseMessageHandle(0, "Category is required.");
-        } else if ($teamCommision == "") {
-            return $this->AppHelper->responseMessageHandle(0, "Team Commision is required.");
-        } else if ($directCommsion == "") {
-            return $this->AppHelper->responseMessageHandle(0, "Direct Commision is required.");
-        } else if ($waranty == "") {
-            return $this->AppHelper->responseMessageHandle(0, "waranty is required.");
-        } else if ($description == "") {
-            return $this->AppHelper->responseMessageHandle(0, "description is required.");
-        } else if ($supplierName == "") {
-            return $this->AppHelper->responseMessageHandle(0, "supplier Name is required.");
+        // } else if ($category == "") {
+        //     return $this->AppHelper->responseMessageHandle(0, "Category is required.");
+        // } else if ($teamCommision == "") {
+        //     return $this->AppHelper->responseMessageHandle(0, "Team Commision is required.");
+        // } else if ($directCommsion == "") {
+        //     return $this->AppHelper->responseMessageHandle(0, "Direct Commision is required.");
+        // } else if ($waranty == "") {
+        //     return $this->AppHelper->responseMessageHandle(0, "waranty is required.");
+        // } else if ($description == "") {
+        //     return $this->AppHelper->responseMessageHandle(0, "description is required.");
+        // } else if ($supplierName == "") {
+        //     return $this->AppHelper->responseMessageHandle(0, "supplier Name is required.");
         } else {
 
             try {
-                $isValidCategory = $this->validateCategory($category);
+                // $isValidCategory = $this->validateCategory($category);
 
-                if ($isValidCategory) {
-                    $productInfo = array();
+                // if ($isValidCategory) {
+                    
+                // }
+
+                $productInfo = array();
                     $productInfo['productId'] = $productId;
                     $productInfo['productName'] = $productName;
                     $productInfo['price'] = $price;
                     $productInfo['category'] = $category;
                     $productInfo['teamCommision'] = $teamCommision;
                     $productInfo['directCommision'] = $directCommsion;
-                    $productInfo['isStorePick'] = ($isStorePick ? 1 : 0);
+                    // $productInfo['isStorePick'] = ($isStorePick ? 1 : 0);
                     $productInfo['waranty'] = $waranty;
                     $productInfo['description'] = $description;
                     $productInfo['weight'] = $weight;
@@ -192,7 +225,6 @@ class ProductController extends Controller
                     } else {
                         return $this->AppHelper->responseMessageHandle(0, "Error Occureed");
                     }
-                }
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
