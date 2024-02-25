@@ -32,6 +32,13 @@ class OrderEn extends Model
         return $this->where($map)->first();
     }
 
+    public function set_tracking_number_by_order($info) {
+        $map['id'] = $info['orderId'];
+        $map1['tracking_number'] = $info['trackingNumber'];
+
+        return $this->where($map)->update($map1);
+    }
+
     public function update_pay_status_by_order($info) {
         $map['id'] = $info['orderId'];
         $map1['payment_status'] = $info['paymentStatus'];

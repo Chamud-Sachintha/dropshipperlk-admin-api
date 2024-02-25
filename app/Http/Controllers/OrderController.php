@@ -401,7 +401,7 @@ class OrderController extends Controller
                 $info['orderId'] = $orderId;
                 $info['trackingNumber'] = $trackingNumber;
 
-                $resp = $this->Order->set_tracking_number_by_order($info);
+                $resp = $this->OrderEn->set_tracking_number_by_order($info);
 
                 if ($resp) {
                     return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
