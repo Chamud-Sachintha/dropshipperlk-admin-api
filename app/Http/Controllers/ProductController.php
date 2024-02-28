@@ -120,7 +120,7 @@ class ProductController extends Controller
         if ($request_token == "") {
             return $this->AppHelper->responseMessageHandle(0, "Token is required.");
         } else {
-
+            
             try {
                 $resp = $this->Product->find_all();
 
