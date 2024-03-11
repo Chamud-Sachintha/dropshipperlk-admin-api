@@ -8,6 +8,10 @@ use App\Models\Product;
 use App\Models\Reseller;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SimpleExcelExport;
+use Carbon\Carbon;
+
 
 class WayBillPdfPrintController extends Controller
 {
@@ -68,5 +72,32 @@ class WayBillPdfPrintController extends Controller
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
         }
+    }
+
+    public function downloadExcel(Request $request)
+    {
+        // You can add validation or authorization logic here if needed
+
+        $selectedReportType = $request->input('selectedReportType');
+        $token = $request->input('token');
+        $typerepo ='';
+
+       
+        if( $selectedReportType == 1)
+        {
+            $typerepo = "Order_Report";
+        }
+        elseif ( $selectedReportType == 2 )
+        {
+            $typerepo = "Bank_Details";
+        }
+        else{
+            $typerepo = "Customer_Report";
+        }
+        $export = new SimpleExcelExport($selectedReportType);
+
+        $filename = $typerepo . '_' . Carbon::now()->format('Y-m-d_H-i-s');
+       
+        return Excel::download($export, $filename . '.xlsx');
     }
 }

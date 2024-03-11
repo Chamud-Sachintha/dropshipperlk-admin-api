@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\PayoutLog;
 use App\Models\ProfitShare;
 use App\Models\Reseller;
+use App\Models\BankDetails;
 use Illuminate\Http\Request;
 
 class PayoutLogController extends Controller
@@ -16,6 +17,7 @@ class PayoutLogController extends Controller
     private $PayOutLog;
     private $Orders;
     private $ProfitShare;
+    private $BankDetails;
 
     public function __construct()
     {
@@ -24,6 +26,7 @@ class PayoutLogController extends Controller
         $this->PayOutLog = new PayoutLog();
         $this->Orders = new Order();
         $this->ProfitShare = new ProfitShare();
+        $this->BankDetails = new BankDetails();
     }
 
     public function getPayOutInfoBySeller(Request $request) {
@@ -38,11 +41,18 @@ class PayoutLogController extends Controller
                 $seller_info = $this->Reseller->find_by_id($sellerId);
                 $total_pay_out_amount = $this->PayOutLog->get_total_payout_by_seller($sellerId);
                 $today_pay_out = $this->PayOutLog->get_today_pay_amount($sellerId);
+                $Bankdata =  $this->BankDetails->find_id($sellerId);
 
                 $dataList = array();
                 $dataList['totalPayOutAmount'] = $total_pay_out_amount;
                 $dataList['totalPendingAmount'] = $seller_info['profit_total'];
                 $dataList['todayPayOutAmount'] = $today_pay_out;
+                $dataList['bank_name'] = $Bankdata->bank_name ?? '';
+                $dataList['account_number'] = $Bankdata->account_number ?? '';
+                $dataList['branch_code'] = $Bankdata->branch_code ?? '';
+                $dataList['resellr_name'] = $Bankdata->resellr_name ?? '';
+                
+                
 
                 $all_log = $this->PayOutLog->find_all_by_seller($sellerId);
 

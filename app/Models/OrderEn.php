@@ -35,6 +35,8 @@ class OrderEn extends Model
     public function set_tracking_number_by_order($info) {
         $map['id'] = $info['orderId'];
         $map1['tracking_number'] = $info['trackingNumber'];
+        $map1['courier_name'] = $info['courierName'];
+        $map1['order_status'] = 4;
 
         return $this->where($map)->update($map1);
     }

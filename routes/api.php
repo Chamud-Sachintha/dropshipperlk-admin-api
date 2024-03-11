@@ -37,7 +37,10 @@ Route::middleware('authToken')->post('add-product', [ProductController::class, '
 Route::middleware('authToken')->post('get-category-list', [CategoryController::class, 'getAllCategoryList']);
 Route::middleware('authToken')->post('get-order-requests', [OrderController::class, 'getAllOngoingOrderList']);
 Route::middleware('authToken')->post('get-order-info-by-id', [OrderController::class, 'getOrderInfoListByOrderNumberNew']);
+Route::middleware('authToken')->post('get-order-info-by-Cus', [OrderController::class, 'getOrderInfoListByOrderCusdetails']);
+Route::middleware('authToken')->post('Update-order-info-by-Cus', [OrderController::class, 'UpdateOrderInfoListByOrderCusdetails']);
 Route::middleware('authToken')->post('get-product-list', [ProductController::class, 'getProductList']);
+
 
 Route::middleware('authToken')->post('update-pay-status', [OrderController::class, 'updatePaymentStatus']);
 Route::middleware('authToken')->post('update-order_status', [OrderController::class, 'updateOrderStatus']);
@@ -48,6 +51,7 @@ Route::middleware('authToken')->post('get-seller-list', [PayoutLogController::cl
 
 Route::middleware('authToken')->post('get-payout-info', [PayoutLogController::class, 'getPayOutInfoBySeller']);
 Route::middleware('authToken')->post('view-pdf', [WayBillPdfPrintController::class, 'printWayBillPdf']);
+Route::middleware('authToken')->post('DownloadExcel', [WayBillPdfPrintController::class, 'DownloadExcel']);
 Route::middleware('authToken')->post('dashboard-data', [DashboardController::class, 'getDashboardData']);
 
 Route::middleware('authToken')->post('add-site-banner', [SiteBannerController::class, 'addSiteBannerImage']);
