@@ -350,7 +350,7 @@ class OrderController extends Controller
                             $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
 
                             // $profit = (($resell_info['price'] * $order_info['quantity']) - $product_info['price']) - $courir_charge;
-                            $profit = ($order_info['total_amount'] - ($product_info['price'] * $order_info['quantity'])) - $courir_charge;
+                            $profit = ($order_info['total_amount'] - ($product_info['price'] * $order_info['quantity'])) ;
 
                             $direct_commision = ($product_info['price'] * ($product_info['direct_commision'] / 100));
 

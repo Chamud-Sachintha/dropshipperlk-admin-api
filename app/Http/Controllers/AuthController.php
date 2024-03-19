@@ -50,4 +50,18 @@ class AuthController extends Controller
             }
         }
     }
+
+    public function UserData(Request $request){
+
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else {
+            $userdata = $this->AdminUser->find_by_token( $request_token);
+           $UserName = $userdata['first_name'].' '.$userdata['last_name'];
+         return $this->AppHelper->responseEntityHandle(1, "Operation Complete",  $UserName);
+           
+        }
+    }
 }

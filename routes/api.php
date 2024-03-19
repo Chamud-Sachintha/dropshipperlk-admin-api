@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('login', [AuthController::class, 'authenticateAdminUser']);
+Route::post('User-data', [AuthController::class, 'UserData']);
 
 Route::middleware('authToken')->post('get-kyc-list', [KYCInformationController::class, 'getAllKYCInfoList']);
 Route::middleware('authToken')->post('update-kyc', [KYCInformationController::class, 'updateKYCInformations']);
