@@ -5,6 +5,9 @@ namespace App\Exports;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Reseller;
+use App\Models\OrderEn;
+use App\Models\OrderCancle;
+use App\Models\BankDetails;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class SimpleExcelExport implements FromCollection
@@ -14,9 +17,13 @@ class SimpleExcelExport implements FromCollection
     * @return \Illuminate\Support\Collection
     */
 
+    private $Orders;
+
     public function __construct($selectedReportType)
     {
         $this->selectedReportType = $selectedReportType;
+        $this->Orders = new Order();
+        $this->Reseller = new Reseller();
     }
     public function collection()
     {
@@ -27,6 +34,11 @@ class SimpleExcelExport implements FromCollection
                 $proname = Product::where('id', '=', $order->product_id)->pluck('product_name');
                 $proweight = Product::where('id', '=', $order->product_id)->pluck('weight');
                 $prefix = substr($order->city, 0, 3);
+                $orderStatus = OrderEn::where('order','=',$order->order)->pluck('order_status')->first();
+                $orderTracknumber = OrderEn::where('order','=',$order->order)->pluck('tracking_number')->first();
+                $orderCouriorName = OrderEn::where('order','=',$order->order)->pluck('courier_name')->first();
+                $orderID = OrderEn::where('order','=',$order->order)->pluck('id')->first();
+                $refundStatus = OrderCancle::where('order_id','=',$orderID)->pluck('status')->first();
     
                 if ($prefix == "Col") {
                     $is_colombo = true;
@@ -37,10 +49,40 @@ class SimpleExcelExport implements FromCollection
                     $courir_charge = $this->getCourierCharge($is_colombo, $proweight->first());
                     $FullAmount = $order->total_amount + $courir_charge;
                 }
-    
+
+                if ($orderStatus == 0) {
+                    $StatusO = "Pending";
+                } else if ($orderStatus == 1) {
+                    $StatusO = "Hold";
+                } else if ($orderStatus == 2) {
+                    $StatusO = "Packaging";
+                } else if ($orderStatus == 3) {
+                    $StatusO = "Cancel";
+                } else if ($orderStatus == 4) {
+                    $StatusO = "In Courier";
+                } else if ($orderStatus == 5) {
+                    $StatusO = "Delivered";
+                }else if ($orderStatus == 7) {
+                    $StatusO = "Complete ";
+                }
+                else {
+                    $StatusO = "Return Order";
+                }
+
+                if($refundStatus == null)
+                {
+                    $RefStatus = "No Refunded";
+                }
+                else{
+                    $RefStatus = "Refunded";
+                }
+
                 return [
                     'Order' => $order->order,
                     'Product Name' => $proname->first(),
+                    'Tracking No' => $orderTracknumber,
+                    'Courier Name' => $orderCouriorName,
+                    'Order Status' =>  $StatusO,
                     'Name' => $order->name,
                     'Address' => $order->address,
                     'City' => $order->city,
@@ -49,23 +91,85 @@ class SimpleExcelExport implements FromCollection
                     'Contact 2' => $order->contact_2,
                     'Quantity' => $order->quantity,
                     'Total Amount' => $FullAmount,
+                    'Refunded Status' =>  $RefStatus,
                 ];
             });
     
             $headers = [
-                'Order ID', 'Product Name', 'Name', 'Address',
-                'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount',
+                'Order ID', 'Product Name','Tracking No','Courier Name','Order Status', 'Name', 'Address',
+                'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount','Refunded Status'
             ];
     
             $dataArray->prepend($headers);
 
                 return $dataArray;
-            }
-        elseif($this->selectedReportType  == 2){
-            
+               
         }
+            elseif($this->selectedReportType  == 2)
+            {   
+               $data = Reseller::get();
+                
+
+                $dataArray = $data->map(function ($Banks) {
+                    
+                    $BankName = BankDetails::where('reselller_id','=',$Banks->id)->pluck('bank_name')->first();
+                    $BankAccount = BankDetails::where('reselller_id','=',$Banks->id)->pluck('account_number')->first();
+                    $BankBranchName = BankDetails::where('reselller_id','=',$Banks->id)->pluck('branch_code')->first();
+                    $BankResellerName = BankDetails::where('reselller_id','=',$Banks->id)->pluck('resellr_name')->first();
+                   
+                return [
+                        
+                        'Reseller name' => $Banks->full_name,
+                        'Referral Code' => $Banks->code,
+                        'Bank Name' => $BankName,
+                        'Account Number' => $BankAccount,
+                        'Branch' =>  $BankBranchName,
+                        'Reseller Bank Name' => $BankResellerName,
+                    
+                    ];
+                });
+        
+                $headers = [
+                    'Reseller name', 'Referral Code','Bank Name','Account Number','Branch', 'Reseller Bank Name',
+                ];
+        
+                $dataArray->prepend($headers);
+
+                    return $dataArray;
+            }
         else{
-           
+            $resp = $this->Reseller->find_all();
+
+            
+
+            $dataArray = $resp->map(function ($value) {
+              
+                if($value->profit_total == null || 0)
+                {
+                    $payout = "LKR. 0.00";
+                }
+                else
+                {
+                   $payout = "LKR. ".number_format((float)$value->profit_total, 2, '.', '');
+                }
+               
+            return [
+                    
+                    'Reseller name' => $value->full_name,
+                    'Referral Code' => $value->code,
+                    'Pending Payout' =>  $payout,
+                   
+                
+                ];
+            });
+    
+            $headers = [
+                'Reseller name', 'Referral Code','Pending Payout',
+            ];
+    
+            $dataArray->prepend($headers);
+
+                return $dataArray;
         }
         
     }

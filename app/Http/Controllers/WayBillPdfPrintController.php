@@ -74,7 +74,7 @@ class WayBillPdfPrintController extends Controller
         }
     }
 
-    public function downloadExcel(Request $request)
+    public function DownloadExcel(Request $request)
     {
         // You can add validation or authorization logic here if needed
 
@@ -83,12 +83,14 @@ class WayBillPdfPrintController extends Controller
         $typerepo ='';
 
        
-        if( $selectedReportType == 1)
+        if( $selectedReportType == '1')
         {
+            
             $typerepo = "Order_Report";
         }
-        elseif ( $selectedReportType == 2 )
+        elseif ( $selectedReportType == '2' )
         {
+           
             $typerepo = "Bank_Details";
         }
         else{

@@ -59,8 +59,10 @@ class OrderController extends Controller
                     // $dataList[$key]['productName'] = $product_info['product_name'];
                     if ($value['reseller_id'] == 0) {
                         $dataList[$key]['resellerName'] = 'Direct Customer';
+                        $dataList[$key]['resellerReferral'] = '-';
                     } else {
                         $dataList[$key]['resellerName'] = $reseller_info['full_name'];
+                        $dataList[$key]['resellerReferral'] = $reseller_info['code'];
                     }
                     // $dataList[$key]['customerName'] = $value['name'];
                     // $dataList[$key]['quantity'] = $value['quantity'];
@@ -100,6 +102,8 @@ class OrderController extends Controller
                         $dataList[$key]['orderStatus'] = "In Courier";
                     } else if ($value['order_status'] == 5) {
                         $dataList[$key]['orderStatus'] = "Delivered";
+                    }else if ($value['order_status'] == 7) {
+                        $dataList[$key]['orderStatus'] = "Complete ";
                     }
                     else {
                         $dataList[$key]['orderStatus'] = "Return Order";

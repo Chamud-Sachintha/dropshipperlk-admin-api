@@ -82,6 +82,7 @@ class PayoutLogController extends Controller
 
             $dataList[$key]['sellerId'] = $value['id'];
             $dataList[$key]['resellerName'] = $value['full_name'];
+            $dataList[$key]['resellerReferral'] = $value['code'];
             $dataList[$key]['totalOrders'] = $order_info;
             $dataList[$key]['pendingPayout'] = $value['profit_total'];
         }

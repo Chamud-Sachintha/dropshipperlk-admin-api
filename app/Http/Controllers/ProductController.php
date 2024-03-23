@@ -135,6 +135,14 @@ class ProductController extends Controller
                     $dataList[$key]['description'] = $value['description'];
                     $dataList[$key]['price'] = $value['price'];
                     $dataList[$key]['createTime'] = $value['create_time'];
+                    if($value['status'] == "1")
+                    {
+                        $dataList[$key]['status'] = "InStock";
+                    }
+                    else
+                    {
+                        $dataList[$key]['status'] = "OutOfStock";
+                    }
                 }
 
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
@@ -159,6 +167,7 @@ class ProductController extends Controller
                 $dataList['productName'] = $resp['product_name'];
                 $dataList['description'] = $resp['description'];
                 $dataList['price'] = $resp['price'];
+                $dataList['status'] = $resp['status'];
 
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
             } catch (\Exception $e) {
@@ -179,6 +188,7 @@ class ProductController extends Controller
         $description = (is_null($request->description) || empty($request->description)) ? "" : $request->description;
         $weight = (is_null($request->weight) || empty($request->weight)) ? "" : $request->weight;
         $supplierName = (is_null($request->supplierName) || empty($request->supplierName)) ? "" : $request->supplierName;
+        $status = (is_null($request->status) || empty($request->status)) ? "" : $request->status;
 
         if ($productName == "") {
             return $this->AppHelper->responseMessageHandle(0, "Product Name is required.");
@@ -217,6 +227,7 @@ class ProductController extends Controller
                     $productInfo['description'] = $description;
                     $productInfo['weight'] = $weight;
                     $productInfo['supplierName'] = $supplierName;
+                    $productInfo['status'] = $request->status;
 
                     $resp = $this->Product->update_by_id($productInfo);
 
