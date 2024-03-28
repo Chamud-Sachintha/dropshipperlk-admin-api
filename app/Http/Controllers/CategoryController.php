@@ -86,7 +86,56 @@ class CategoryController extends Controller
         }
     }
 
+    public function FindCategoryInfo(Request $request){
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else {
+
+            try {
+             
+                $resp = $this->Category->find_by_id($request->CategoryId);
+                return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $resp);
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
     public function updateCategoryInfo(Request $request) {
-        
+        $CategorytId = (is_null($request->id) || empty($request->id)) ? "" : $request->id;
+        $CategorName = (is_null($request->categoryName) || empty($request->categoryName)) ? "" : $request->categoryName;
+        $description = (is_null($request->description) || empty($request->description)) ? "" : $request->description;
+        $status = (is_null($request->status) || empty($request->status)) ? "" : $request->status;
+
+        if ($CategorName == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Category Name is required.");
+        } else if ($status == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Status is required.");
+       
+        } else {
+
+            try {
+               
+
+                $CategoryInfo = array();
+                    $CategoryInfo['categoryid'] = $CategorytId;
+                    $CategoryInfo['categoryName'] = $CategorName;
+                    $CategoryInfo['description'] = $description;
+                    $CategoryInfo['status'] = $status;
+                  
+
+                   $resp = $this->Category->update_by_id($CategoryInfo);
+
+                    if ($resp) {
+                        return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
+                    } else {
+                        return $this->AppHelper->responseMessageHandle(0, "Error Occureed");
+                    }
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
     }
 }

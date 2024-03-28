@@ -11,6 +11,7 @@ use App\Models\ProfitShare;
 use App\Models\Reseller;
 use App\Models\ResellProduct;
 use Illuminate\Http\Request;
+use DateTime;
 
 class OrderController extends Controller
 {
@@ -108,6 +109,9 @@ class OrderController extends Controller
                     else {
                         $dataList[$key]['orderStatus'] = "Return Order";
                     }
+                    $dateTime = new DateTime($value['created_at']);
+                    $formattedDate = $dateTime->format('Y-m-d');  
+                    $dataList[$key]['orderPlaceDate'] = $formattedDate;
                 }
 
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);

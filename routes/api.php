@@ -36,6 +36,8 @@ Route::middleware('authToken')->post('update-kyc', [KYCInformationController::cl
 Route::middleware('authToken')->post('add-category', [CategoryController::class, 'addNewCategory']);
 Route::middleware('authToken')->post('add-product', [ProductController::class, 'addNewProduct']);
 Route::middleware('authToken')->post('get-category-list', [CategoryController::class, 'getAllCategoryList']);
+Route::middleware('authToken')->post('find-category', [CategoryController::class, 'FindCategoryInfo']);
+Route::middleware('authToken')->post('update-category', [CategoryController::class, 'updateCategoryInfo']);
 Route::middleware('authToken')->post('get-order-requests', [OrderController::class, 'getAllOngoingOrderList']);
 Route::middleware('authToken')->post('get-order-info-by-id', [OrderController::class, 'getOrderInfoListByOrderNumberNew']);
 Route::middleware('authToken')->post('get-order-info-by-Cus', [OrderController::class, 'getOrderInfoListByOrderCusdetails']);

@@ -42,4 +42,13 @@ class Category extends Model
 
         return $this->where($map)->get();
     }
+
+    public function update_by_id($CategoryInfo) {
+        $map1['id'] = $CategoryInfo['categoryid'];
+        $map['category_name'] = $CategoryInfo['categoryName'];
+        $map['description'] = $CategoryInfo['description'];
+        $map['status'] = $CategoryInfo['status'];
+
+        return $this->where($map1)->update($map);
+    }
 }
