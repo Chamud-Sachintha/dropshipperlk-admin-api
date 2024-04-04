@@ -89,6 +89,7 @@ class Order extends Model
         return $this->where($map)->first();
     }
 
+
     public function get_pending_count_by_seller() {
         // $map['reseller_id'] = $seller;
         $map['order_status'] = 0;
@@ -146,4 +147,5 @@ class Order extends Model
 
         return $this->where($map)->count();
     }
+
 }
