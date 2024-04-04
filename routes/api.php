@@ -60,3 +60,4 @@ Route::middleware('authToken')->post('dashboard-data', [DashboardController::cla
 Route::middleware('authToken')->post('add-site-banner', [SiteBannerController::class, 'addSiteBannerImage']);
 Route::middleware('authToken')->post('update-product', [ProductController::class, 'updateProductInfo']);
 Route::middleware('authToken')->post('get-product-info-by-id', [ProductController::class, 'getProductInfoById']);
+Route::middleware('authToken')->post('get-product-delete-by-id', [ProductController::class, 'getProductdeleteById']);

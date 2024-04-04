@@ -75,4 +75,10 @@ class Product extends Model
     public function find_all() {
        return  $this->all();
     }
+
+    public function delete_by_id($pid) {
+        $map['id'] = $pid;
+
+        return $this->where($map)->delete();
+    }
 }
