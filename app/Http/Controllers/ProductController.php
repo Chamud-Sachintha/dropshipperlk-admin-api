@@ -274,13 +274,9 @@ class ProductController extends Controller
     
             try {
                 $resp = $this->Product->delete_by_id($productId);
-                if (!$resp) {
-                    return $this->AppHelper->responseEntityHandle(2, "No Product", null);
-                }
-                else
-                {
-                    return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $resp);
-                }
+              
+                return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $resp);
+               
     
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
