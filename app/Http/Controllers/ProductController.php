@@ -267,25 +267,25 @@ class ProductController extends Controller
     public function getProductdeleteById(Request $request){
 
         $productId = (is_null($request->productId) || empty($request->productId)) ? "" : $request->productId;
-
+    
         if ($productId == "") {
             return $this->AppHelper->responseMessageHandle(0, "Token is required.");
         } else {
-
+    
             try {
                 $resp = $this->Product->delete_by_id($productId);
-            if (!$resp) {
-                return $this->AppHelper->responseEntityHandle(2, "No Product");
-            }
-            else
-            {
-                return $this->AppHelper->responseEntityHandle(1, "Operation Complete");
-            }
-
-               
+                if (!$resp) {
+                    return $this->AppHelper->responseEntityHandle(2, "No Product", null);
+                }
+                else
+                {
+                    return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $resp);
+                }
+    
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
         }
     }
+    
 }
