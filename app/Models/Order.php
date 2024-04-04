@@ -23,7 +23,7 @@ class Order extends Model
         'total_amount',
         'payment_method',                       // 1- bank dep 2- cod 3- koko
         'payment_status',                       // 0- pending 1- paid
-        'order_status',                         // 0 - pending 1- hold 2- packaging 3- cancel 4- in courier 5- delivered
+        'order_status',                         // 0 - pending 1- hold 2- packaging 3- cancel 4- in courier 5- delivered 6- returned 7- complted
         'tracking_number',
         'is_reseller_completed',
         'create_time'
@@ -105,10 +105,12 @@ class Order extends Model
 
     public function get_complete_count_by_seller() {
         // $map['reseller_id'] = $seller;
-        $map['order_status'] = 5;
+        $map['order_status'] = 7;
 
         return $this->where($map)->count();
     }
+
+    
 
     public function get_camcle_count_by_seller() {
         // $map['reseller_id'] = $seller;
@@ -133,7 +135,15 @@ class Order extends Model
     public function get_pending_payment() {
         // $map['reseller_id'] = $seller;
         $map['payment_status'] = 0;
+        $map['order_status'] = 5;
 
         return $this->where($map)->sum("total_amount");
+    }
+
+    public function get_pending_count() {
+        // $map['reseller_id'] = $seller;
+        $map['order_status'] = 5;
+
+        return $this->where($map)->count();
     }
 }
