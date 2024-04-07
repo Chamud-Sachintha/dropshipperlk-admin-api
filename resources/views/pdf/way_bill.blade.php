@@ -50,33 +50,28 @@
                 <table class="tg">
                     <thead>
                         <tr>
-                            <th class="tg-0lax" colspan="4">From : Dropshipper.IK| Lulu.LK | 0718858925</th>
+                            <th class="tg-0lax" colspan="4"><center> Dropshipper.IK 0718858925 </center></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="tg-0lax" colspan="2">Seller: {{ $item['sellerName'] }}</td>
-                            <td class="tg-0lax text-center" colspan="2">{{ $item['sellerMobile'] }}</td>
+                            <td class="tg-0lax" colspan="2"><center>Seller: {{ $item['sellerName'] }}</center></td>
+                            <td class="tg-0lax text-center" colspan="2"><center>Seller Contact No:{{ $item['sellerMobile'] }}</center></td>
                         </tr>
                         <tr>
-                            <td class="tg-0lax text-center" colspan="4">To</td>
+                            <td class="tg-0lax " colspan="4">Customer Details :
+                                <br> {{ $item['customerName'] }}
+                                <br> {{ $item['customerAddress'] }} 
+                                <br> {{ $item['customerMobile'] }}</td>
                         </tr>
+                       
                         <tr>
-                            <td class="tg-0lax">Order No</td>
-                            <td class="tg-0lax">{{ $item['customerName'] }}</td>
-                            <td class="tg-0lax">Contact No</td>
-                            <td class="tg-0lax">{{ $item['paymentMethod'] }}</td>
+                            <td class="tg-0lax"colspan="2" >{{ $item['productName'] }}</td>
+                            <td class="tg-0lax">QTY: {{ $item['quantity'] }}</td>
+                           
+                            <td class="tg-0lax" >Rs.{{ $item['totalAmount'] }}</td>
                         </tr>
-                        <tr>
-                            <td class="tg-0lax">{{ $item['orderNumber'] }}</td>
-                            <td class="tg-0lax">{{ $item['customerAddress'] }}</td>
-                            <td class="tg-0lax">{{ $item['customerMobile'] }}</td>
-                            <td class="tg-0lax">{{ $item['totalAmount'] }}</td>
-                        </tr>
-                        <tr>
-                            <td class="tg-0lax" colspan="2">{{ $item['productName'] }}</td>
-                            <td class="tg-0lax" colspan="2">QTY: {{ $item['quantity'] }}</td>
-                        </tr>
+                       
                     </tbody>
                 </table>
             </div>
