@@ -41,11 +41,21 @@ class WayBillPdfPrintController extends Controller
                 $dataList = array();
                 foreach ($order_numbers as $key => $value) {
                     $order_info = $this->Order->find_by_order_number($value);
-                    $seller_info = $this->Seller->find_by_id($order_info['reseller_id']);
+                    if($order_info['reseller_id'] == "")
+                    {
+                        $dataList[$key]['sellerName'] = 'Direct Buy';
+                        $dataList[$key]['sellerMobile'] = '0718858925';
+                    }
+                    else
+                    {
+                        $seller_info = $this->Seller->find_by_id($order_info['reseller_id']);
+                        $dataList[$key]['sellerName'] = $seller_info['full_name'];
+                        $dataList[$key]['sellerMobile'] = $seller_info['phone_number'];
+                    }
+                   
                     $product_info = $this->Product->find_by_id($order_info['product_id']);
 
-                    $dataList[$key]['sellerName'] = $seller_info['full_name'];
-                    $dataList[$key]['sellerMobile'] = $seller_info['phone_number'];
+                   
                     $dataList[$key]['customerName'] = $order_info['name'];
 
                     if ($order_info['payment_method'] == 1) {
