@@ -50,26 +50,26 @@
                 <table class="tg">
                     <thead>
                         <tr>
-                            <th class="tg-0lax" colspan="4"><center> Dropshipper.IK 0718858925 </center></th>
+                            <th class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center> LK Online Store </center></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="tg-0lax" colspan="2"><center>Seller: {{ $item['sellerName'] }}</center></td>
-                            <td class="tg-0lax text-center" colspan="2"><center>Seller Contact No:{{ $item['sellerMobile'] }}</center></td>
+                            <td class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;" ><center>Seller: {{ $item['sellerName'] }}</center></td>
+                            
                         </tr>
                         <tr>
-                            <td class="tg-0lax " colspan="4">Customer Details :
-                                <br> {{ $item['customerName'] }}
-                                <br> {{ $item['customerAddress'] }} 
-                                <br> {{ $item['customerMobile'] }}</td>
+                            <td class="tg-0lax " colspan="8" style="font-size:18px; font-weight:bold;">Customer Details :<br>
+                                 {{ $item['customerName'] }},
+                                {{ $item['customerAddress'] }} ,
+                                {{ $item['customerMobile'] }}</td>
                         </tr>
                        
                         <tr>
-                            <td class="tg-0lax"colspan="2" >{{ $item['productName'] }}</td>
-                            <td class="tg-0lax">QTY: {{ $item['quantity'] }}</td>
+                            <td class="tg-0lax"colspan="6" style="font-size:12px; font-weight:bold;">{{ $item['productName'] }}</td>
+                            <td class="tg-0lax" style="font-size:12px; font-weight:bold;">QTY: {{ $item['quantity'] }}</td>
                            
-                            <td class="tg-0lax" >Rs.{{ $item['totalAmount'] }}</td>
+                            <td class="tg-0lax"  style="font-size:12px; font-weight:bold;">Rs.{{ $item['totalAmount'] }}</td>
                         </tr>
                        
                     </tbody>
