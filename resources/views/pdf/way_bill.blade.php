@@ -50,7 +50,7 @@
                 <table class="tg">
                     <thead>
                         <tr>
-                            <th class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center> LK Online Store </center></th>
+                            <th class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center> IK Online Store </center></th>
                         </tr>
                     </thead>
                     <tbody>

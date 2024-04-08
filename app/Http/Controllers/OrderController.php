@@ -251,8 +251,19 @@ class OrderController extends Controller
                     $dataList['orderStatus'] = "Cancle";
                 } else if ($order_info['order_status'] == 4) {
                     $dataList['orderStatus'] = "In Courier";
-                } else {
+                }else if ($order_info['order_status'] == 5) {
                     $dataList['orderStatus'] = "Delivered";
+                } else if ($order_info['order_status'] == 6) {
+
+                    if($order_info['return_status'] == 1){
+                        $dataList['orderStatus'] = "Return and Received";
+                    }
+                    else if ($order_info['return_status'] == 2){
+                         $dataList['orderStatus'] = "Return and Not Recived";
+                     }
+                   
+                }  else {
+                    $dataList['orderStatus'] = "Complted";
                 }
 
                 $dataList['orderCancled'] = 0;
@@ -536,5 +547,20 @@ class OrderController extends Controller
             return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $orderNo);
         }
        
+    }
+
+    public function updateProductInfo(Request $request){
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+        $orderNo = (is_null($request->orderId) || empty($request->orderId)) ? "" : $request->orderId;
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else if ($orderNo == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Order Id is required.");
+        }else{
+           
+            $Update = OrderEn::where('id', $orderNo)->update(['return_status' =>  $request->returnstatus]);
+            return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $orderNo);
+        }
     }
 }
