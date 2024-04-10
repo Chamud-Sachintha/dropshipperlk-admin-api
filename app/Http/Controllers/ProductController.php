@@ -273,6 +273,24 @@ class ProductController extends Controller
         } else {
     
             try {
+                $productImages = $this->Product->find_by_id($productId);
+
+                $jsonData = $productImages['images'];
+                $imageData = json_decode($jsonData, true);
+                $imageDirectory = public_path('/images');
+
+                foreach ($imageData as $key => $filename) {
+                   
+                    $imageFilePath = $imageDirectory . '/' . $filename;
+                   
+                    if (file_exists($imageFilePath)) {
+                        unlink($imageFilePath);
+                        echo "Deleted: " . $imageFilePath . "\n";
+                    } else {
+                        echo "File not found: " . $imageFilePath . "\n";
+                    }
+                }
+
                 $resp = $this->Product->delete_by_id($productId);
               
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $resp);

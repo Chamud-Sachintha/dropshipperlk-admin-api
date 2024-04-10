@@ -53,4 +53,18 @@ class Reseller extends Model
     public function find_all() {
         return $this->all();
     }
+
+    public function find_by_token($token) {
+        $map['token'] = $token;
+
+        return $this->where($map)->first();
+    }
+    public function update_password($userId ,$userPass)
+    {
+        //$map['id'] = $userId;
+        $map['password'] = $userPass;
+
+        return $this->where(array('id' => $userId))->update($map);
+
+    }
 }

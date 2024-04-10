@@ -5,17 +5,20 @@ namespace App\Http\Controllers;
 use App\Helpers\AppHelper;
 use App\Models\AdminUser;
 use Illuminate\Http\Request;
+use App\Models\Reseller;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     private $AppHelper;
     private $AdminUser;
+    private $Reseller;
 
     public function __construct()
     {
         $this->AppHelper = new AppHelper();
         $this->AdminUser = new AdminUser();
+        $this->Reseller = new Reseller();
     }
 
     public function authenticateAdminUser(Request $request) {
@@ -63,5 +66,48 @@ class AuthController extends Controller
          return $this->AppHelper->responseEntityHandle(1, "Operation Complete",  $UserName);
            
         }
+    }
+
+    public function GetAllResellerUsers(Request $request){
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        } else {
+            $userdata = $this->Reseller->find_all();
+        
+         return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $userdata);
+           
+        }
+    }
+
+    public function SetResetpassResellerUsers(Request $request){
+
+        $request_token = (is_null($request->token) || empty($request->token)) ? "" : $request->token;
+        $seller_id = (is_null($request->sellerId) || empty($request->sellerId)) ? "" : $request->sellerId;
+       
+
+        if ($request_token == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        }else {
+
+            try {
+                
+                if(empty($seller_id)){
+                    throw new \Exception("Invalid token.", 0);
+                }
+                else{
+                    $userPass =  Hash::make("abc123");
+                    $donechane = $this->Reseller->update_password( $seller_id ,$userPass);
+                }
+
+                      
+                return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
+                       
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+
     }
 }
