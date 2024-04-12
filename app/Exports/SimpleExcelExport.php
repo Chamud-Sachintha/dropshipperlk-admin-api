@@ -38,7 +38,7 @@ class SimpleExcelExport implements FromCollection
                 $orderTracknumber = OrderEn::where('order','=',$order->order)->pluck('tracking_number')->first();
                 $orderCouriorName = OrderEn::where('order','=',$order->order)->pluck('courier_name')->first();
                 $orderID = OrderEn::where('order','=',$order->order)->pluck('id')->first();
-                $refundStatus = OrderCancle::where('order_id','=',$orderID)->pluck('status')->first();
+                $refundStatus = OrderEn::where('id','=',$orderID)->pluck('payment_status')->first();
     
                 if ($prefix == "Col") {
                     $is_colombo = true;
@@ -69,12 +69,12 @@ class SimpleExcelExport implements FromCollection
                     $StatusO = "Return Order";
                 }
 
-                if($refundStatus == null)
+                if($refundStatus == 2)
                 {
-                    $RefStatus = "No Refunded";
+                    $RefStatus = "Refunded";
                 }
                 else{
-                    $RefStatus = "Refunded";
+                    $RefStatus ="No Refunded";
                 }
 
                 return [
