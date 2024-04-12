@@ -8,6 +8,7 @@ use App\Models\OrderCancle;
 use App\Models\Product;
 use App\Models\Reseller;
 use Illuminate\Http\Request;
+use App\Models\OrderEn;
 
 class OrderCancleController extends Controller
 {
@@ -16,6 +17,7 @@ class OrderCancleController extends Controller
     private $Product;
     private $Reseller;
     private $OrderCancleLog;
+    private $OrderEn;
 
     public function __construct()
     {
@@ -24,6 +26,7 @@ class OrderCancleController extends Controller
         $this->Product = new Product();
         $this->Reseller = new Reseller();
         $this->OrderCancleLog = new OrderCancle();
+        $this->OrderEn = new OrderEn();
     }
     
     public function refundApprove(Request $request) {
@@ -47,13 +50,13 @@ class OrderCancleController extends Controller
 
                 $resp = $this->OrderCancleLog->update_refund_by_order($info);
 
-                if ($resp) {
+                if ($orderId) {
 
                     $refund_info = array();
                     $refund_info['orderId'] = $orderId;
                     $refund_info['paymentStatus'] = 2;
 
-                    $update_order = $this->Order->update_refund_by_order($refund_info);
+                    $update_order = $this->OrderEn->update_refund_by_order($refund_info);
 
                     if ($update_order) {
                         return $this->AppHelper->responseMessageHandle(1, "Operation Complete");

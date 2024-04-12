@@ -32,7 +32,7 @@ class Reseller extends Model
     }
 
     public function get_ref_list_by_seller($sellerRef) {
-        $map['ref_code'] = $sellerRef;
+        $map['code'] = $sellerRef;
 
         return $this->where($map)->get();
     }

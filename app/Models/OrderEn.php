@@ -48,6 +48,13 @@ class OrderEn extends Model
         return $this->where($map)->update($map1);
     }
 
+    public function update_refund_by_order($info) {
+        $map['id'] = $info['orderId'];
+        $map1['payment_status'] = $info['paymentStatus'];
+
+        return $this->where($map)->update($map1);
+    }
+
     public function update_order_status_by_order($info) {
         $map['id'] = $info['orderId'];
         $map1['order_status'] = $info['orderStatus'];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\AppHelper;
 use App\Models\Order;
+use App\Models\OrderEn;
 use App\Models\Product;
 use App\Models\Reseller;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
@@ -19,6 +20,7 @@ class WayBillPdfPrintController extends Controller
     private $Order;
     private $Seller;
     private $Product;
+    private $OrderEn;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class WayBillPdfPrintController extends Controller
         $this->Order = new Order();
         $this->Seller = new Reseller();
         $this->Product = new Product();
+        $this->OrderEn = new OrderEn();
     }
 
     public function printWayBillPdf(Request $request) {
@@ -41,6 +44,7 @@ class WayBillPdfPrintController extends Controller
                 $dataList = array();
                 foreach ($order_numbers as $key => $value) {
                     $order_info = $this->Order->find_by_order_number($value);
+                    $order_Totalptice = $this->OrderEn->getOrderInfoByOrderNumber($value);
                     if($order_info['reseller_id'] == 0)
                     {
                         $dataList[$key]['sellerName'] = 'Direct purchase';
@@ -69,7 +73,8 @@ class WayBillPdfPrintController extends Controller
                     $dataList[$key]['orderNumber'] = $value;
                     $dataList[$key]['customerAddress'] = $order_info['address'];
                     $dataList[$key]['customerMobile'] = $order_info['contact_1'];
-                    $dataList[$key]['totalAmount'] = $order_info['total_amount'];
+                    $dataList[$key]['customerMobile2'] = $order_info['contact_2'];
+                    $dataList[$key]['totalAmount'] = $order_Totalptice['total_amount'];
                     $dataList[$key]['productName'] = $product_info['product_name'];
                     $dataList[$key]['quantity'] = $order_info['quantity'];
                 }

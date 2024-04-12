@@ -61,8 +61,8 @@
                         <tr>
                             <td class="tg-0lax " colspan="8" style="font-size:18px; font-weight:bold;">Customer Details :<br>
                                  {{ $item['customerName'] }},
-                                {{ $item['customerAddress'] }} ,
-                                {{ $item['customerMobile'] }}</td>
+                                {{ $item['customerAddress'] }} ,<br>
+                                {{ $item['customerMobile'] }} / {{ $item['customerMobile2'] }} </td>
                         </tr>
                        
                         <tr>

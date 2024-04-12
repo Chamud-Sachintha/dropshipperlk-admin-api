@@ -85,14 +85,17 @@ class ProductController extends Controller
                     $productInfo['supplierName'] = $supplierName;
                     $productInfo['stockCount'] = $stockCount;
 
-                    $imageListData = array();
-                    foreach ($imageList as $key => $value) {
-                        $uniqueId = uniqid();
-                        $ext = $value->getClientOriginalExtension();
-
-                        $value->move(public_path('/images'), $uniqueId . '.' . $ext);
-                        $imageListData[$key] = $uniqueId . '.' . $ext;
+                    if($imageList){
+                        $imageListData = array();
+                        foreach ($imageList as $key => $value) {
+                            $uniqueId = uniqid();
+                            $ext = $value->getClientOriginalExtension();
+    
+                            $value->move(public_path('/images'), $uniqueId . '.' . $ext);
+                            $imageListData[$key] = $uniqueId . '.' . $ext;
+                        }
                     }
+                    
 
                     $productInfo['images'] = json_encode($imageListData);
                     $productInfo['createTime'] = $this->AppHelper->get_date_and_time();
