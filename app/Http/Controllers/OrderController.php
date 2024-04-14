@@ -75,11 +75,19 @@ class OrderController extends Controller
                     else{
                         $dataList[$key]['trackingNumber'] = $value['tracking_number'];
                     }
+
                     if($value['courier_name'] == ""){
                         $dataList[$key]['courierName'] = "-";
                     }
                     else{
                         $dataList[$key]['courierName'] = $value['courier_name'];
+                    }
+
+                    if($value['bank_slip'] == ""){
+                        $dataList[$key]['bank_slip'] = "";
+                    }
+                    else{
+                        $dataList[$key]['bank_slip'] = $value['bank_slip'];
                     }
                     
 
@@ -387,7 +395,7 @@ class OrderController extends Controller
                                 $profitShareInfo['profitTotal'] = $set_profit_total['profit_total'];
                                 $profitShareInfo['createTime'] = $this->AppHelper->get_date_and_time();
                                 
-                                $ref_list = $this->Reseller->get_ref_list_by_seller($reseller_info['code']);
+                                $ref_list = $this->Reseller->get_ref_list_by_seller($reseller_info['ref_code']);
                                 $profit_log = $this->ProfitShare->add_log($profitShareInfo);
 
                                 $ref_profit_info = array();

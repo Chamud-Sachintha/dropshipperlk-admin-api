@@ -7,18 +7,21 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use App\Models\Order;
 
 class ProductController extends Controller
 {
     private $AppHelper;
     private $Product;
     private $Category;
+    private $Order;
 
     public function __construct()
     {
         $this->AppHelper = new AppHelper();
         $this->Product = new Product();
         $this->Category = new Category();
+        $this->Order = new Order();
     }
 
     public function addNewProduct(Request $request) {
@@ -273,30 +276,38 @@ class ProductController extends Controller
     
         if ($productId == "") {
             return $this->AppHelper->responseMessageHandle(0, "Token is required.");
-        } else {
-    
+        }
+         else {
+                $ordecheck = $this->Order->find_by_order_id($productId);
             try {
-                $productImages = $this->Product->find_by_id($productId);
 
-                $jsonData = $productImages['images'];
-                $imageData = json_decode($jsonData, true);
-                $imageDirectory = public_path('/images');
-
-                foreach ($imageData as $key => $filename) {
-                   
-                    $imageFilePath = $imageDirectory . '/' . $filename;
-                   
-                    if (file_exists($imageFilePath)) {
-                        unlink($imageFilePath);
-                        echo "Deleted: " . $imageFilePath . "\n";
-                    } else {
-                        echo "File not found: " . $imageFilePath . "\n";
-                    }
+                if($ordecheck){
+                    return $this->AppHelper->responseEntityHandle(0, "Product is already in Order. Can't Delete");
                 }
+                else{
+                    $productImages = $this->Product->find_by_id($productId);
 
-                $resp = $this->Product->delete_by_id($productId);
-              
-                return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $resp);
+                    $jsonData = $productImages['images'];
+                    $imageData = json_decode($jsonData, true);
+                    $imageDirectory = public_path('/images');
+    
+                    foreach ($imageData as $key => $filename) {
+                       
+                        $imageFilePath = $imageDirectory . '/' . $filename;
+                       
+                        if (file_exists($imageFilePath)) {
+                            unlink($imageFilePath);
+                            echo "Deleted: " . $imageFilePath . "\n";
+                        } else {
+                            echo "File not found: " . $imageFilePath . "\n";
+                        }
+                    }
+    
+                    $resp = $this->Product->delete_by_id($productId);
+                  
+                    return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $resp);
+                }
+               
                
     
             } catch (\Exception $e) {

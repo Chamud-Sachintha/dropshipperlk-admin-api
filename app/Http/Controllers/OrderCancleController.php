@@ -54,7 +54,7 @@ class OrderCancleController extends Controller
 
                     $refund_info = array();
                     $refund_info['orderId'] = $orderId;
-                    $refund_info['paymentStatus'] = 2;
+                    $refund_info['paymentStatus'] = '2';
 
                     $update_order = $this->OrderEn->update_refund_by_order($refund_info);
 

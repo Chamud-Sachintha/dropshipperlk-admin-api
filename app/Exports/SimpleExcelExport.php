@@ -38,7 +38,7 @@ class SimpleExcelExport implements FromCollection
                 $orderTracknumber = OrderEn::where('order','=',$order->order)->pluck('tracking_number')->first();
                 $orderCouriorName = OrderEn::where('order','=',$order->order)->pluck('courier_name')->first();
                 $orderID = OrderEn::where('order','=',$order->order)->pluck('id')->first();
-                $refundStatus = OrderEn::where('id','=',$orderID)->pluck('payment_status')->first();
+                $refundStatus = OrderEn::where('id','=',$orderID)->pluck('return_status')->first();
     
                 if ($prefix == "Col") {
                     $is_colombo = true;
@@ -69,7 +69,7 @@ class SimpleExcelExport implements FromCollection
                     $StatusO = "Return Order";
                 }
 
-                if($refundStatus == 2)
+                if($refundStatus == 1)
                 {
                     $RefStatus = "Refunded";
                 }
@@ -91,13 +91,13 @@ class SimpleExcelExport implements FromCollection
                     'Contact 2' => $order->contact_2,
                     'Quantity' => $order->quantity,
                     'Total Amount' => $FullAmount,
-                    'Refunded Status' =>  $RefStatus,
+                    'Order Return Status' =>  $RefStatus,
                 ];
             });
     
             $headers = [
                 'Order ID', 'Product Name','Tracking No','Courier Name','Order Status', 'Name', 'Address',
-                'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount','Refunded Status'
+                'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount','Refunded Status',
             ];
     
             $dataArray->prepend($headers);

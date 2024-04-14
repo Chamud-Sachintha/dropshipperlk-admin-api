@@ -126,4 +126,5 @@ class OrderEn extends Model
 
         return $this->where($map)->count();
     }
+
 }
