@@ -68,7 +68,7 @@ class SimpleExcelExport implements FromCollection
                 else {
                     $StatusO = "Return Order";
                 }
-
+                if ($orderStatus == 3) {
                 if($refundStatus == 1)
                 {
                     $RefStatus = "Refunded";
@@ -76,6 +76,9 @@ class SimpleExcelExport implements FromCollection
                 else{
                     $RefStatus ="No Refunded";
                 }
+            }else{
+                $RefStatus = "-";
+            }
 
                 return [
                     'Order' => $order->order,
@@ -97,7 +100,7 @@ class SimpleExcelExport implements FromCollection
     
             $headers = [
                 'Order ID', 'Product Name','Tracking No','Courier Name','Order Status', 'Name', 'Address',
-                'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount','Refunded Status',
+                'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount','Order Return Status',
             ];
     
             $dataArray->prepend($headers);
