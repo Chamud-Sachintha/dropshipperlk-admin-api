@@ -68,7 +68,7 @@ class SimpleExcelExport implements FromCollection
                 else {
                     $StatusO = "Return Order";
                 }
-                if ($orderStatus == 3) {
+                if ($orderStatus == 6) {
                 if($refundStatus == 1)
                 {
                     $RefStatus = "Refunded";
