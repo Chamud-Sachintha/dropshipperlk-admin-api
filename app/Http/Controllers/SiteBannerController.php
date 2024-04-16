@@ -24,7 +24,7 @@ class SiteBannerController extends Controller
         if ($banner_img == "") {
             return $this->AppHelper->responseMessageHandle(0, "Banner Image is required.");
         } else {
-
+            $existimage = $this->SiteBanner->getbannerhistry();
             try {
                 $imgInfo = array();
                 $imgInfo['bannerImage'] = $this->AppHelper->decodeImage($banner_img, 'banners');
