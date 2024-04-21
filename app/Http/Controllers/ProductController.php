@@ -136,7 +136,16 @@ class ProductController extends Controller
 
                     $dataList[$key]['id'] = $value['id'];
                     $dataList[$key]['productName'] = $value['product_name'];
-                    $dataList[$key]['image'] = json_decode($value['images'])->image0;
+                    $decodedImages = json_decode($value['images']);
+
+                    if ($decodedImages && isset($decodedImages->image0) && !empty($decodedImages->image0)){
+                        // Assign the first image URL to $dataList[$key]['image']
+                        $dataList[$key]['image'] = json_decode($value['images'])->image0;
+                    } else {
+                        // Set $dataList[$key]['image'] to an empty string
+                        $dataList[$key]['image'] = '';
+                    }
+                    
                     $dataList[$key]['categoryName'] = $category_info['category_name'];
                     $dataList[$key]['description'] = $value['description'];
                     $dataList[$key]['price'] = $value['price'];
@@ -149,9 +158,11 @@ class ProductController extends Controller
                     {
                         $dataList[$key]['status'] = "OutOfStock";
                     }
+                   
                 }
-
-                return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
+               
+               return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
+             
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
