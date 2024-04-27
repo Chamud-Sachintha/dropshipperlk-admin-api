@@ -89,6 +89,18 @@ class OrderController extends Controller
                     else{
                         $dataList[$key]['bank_slip'] = $value['bank_slip'];
                     }
+
+                    if($value['payment_method'] == 1)
+                    {
+                        $dataList[$key]['paymentMethod'] = "Bank Deposit";
+                    }
+                    else if($value['payment_method'] == 2)
+                    {
+                        $dataList[$key]['paymentMethod'] = "Cash On Delivery";
+                    }
+                    else{
+                        $dataList[$key]['paymentMethod'] = "KOKO Payment";
+                    }
                     
 
                     if ($value['payment_status'] == 0) {
@@ -213,6 +225,7 @@ class OrderController extends Controller
             try {
                 $order = $this->OrderEn->get_by_id($orderId);
                 $order_info = $this->Order->get_order_by_order_number_new($order->order);
+              
 
                 $direct_commision = 0;
                 $team_commision = 0;
@@ -234,6 +247,7 @@ class OrderController extends Controller
                    
                     $dataList[$key]['quantity'] = $value['quantity'];
                     $dataList[$key]['totalAmount'] = $value['total_amount'];
+                    $dataList[$key]['OrderDate'] = date('Y-m-d', strtotime($value['created_at']));
 
                     $direct_commision += $product_info['direct_commision'];
                     $team_commision += $product_info['team_commision'];
@@ -288,7 +302,7 @@ class OrderController extends Controller
                 $dataList['directCommision'] = $direct_commision;
                 $dataList['teamCommision'] = $team_commision;
                 $dataList['totalAmount'] = $order_info['total_amount'];
-
+               
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
@@ -379,7 +393,7 @@ class OrderController extends Controller
                             // $profit = (($resell_info['price'] * $order_info['quantity']) - $product_info['price']) - $courir_charge;
                             $profit = ($order_info['total_amount'] - ($product_info['price'] * $order_info['quantity'])) ;
 
-                            $direct_commision = ($product_info['price'] * ($product_info['direct_commision'] / 100));
+                            $direct_commision = ($product_info['price'] * ($product_info['direct_commision'] / 100) * $order_info['quantity']);
 
                             $profitShareInfo['deliveryCharge'] = $courir_charge;
                             $profitShareInfo['directCommision'] = $direct_commision;
