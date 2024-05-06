@@ -181,7 +181,6 @@ class WayBillPdfPrintController extends Controller
                             }
                         }
     
-                      
                         if ($customerExists) {
                             $dataList[$customerKey]['productName'][] = $this->Product->find_by_id($value2['product_id'])['product_name'];
                             $dataList[$customerKey]['quantity'] += $value2['quantity'];
@@ -204,16 +203,15 @@ class WayBillPdfPrintController extends Controller
                         }
                     }
                 }
-                $fileName = "fff";
+                $fileName = "waybill";
                 $pdf = PDF::loadView('pdf.way_bill', array('data' => $dataList))->setPaper('a4', 'portrait');
-
+    
                 return $pdf->stream($fileName.'.pdf');
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
         }
     }
-    
     
     
 
