@@ -184,6 +184,7 @@ class WayBillPdfPrintController extends Controller
                       
                         if ($customerExists) {
                             $dataList[$customerKey]['productName'][] = $this->Product->find_by_id($value2['product_id'])['product_name'];
+                            $dataList[$customerKey]['quantity'] += $value2['quantity'];
                            
                         } else {
                            

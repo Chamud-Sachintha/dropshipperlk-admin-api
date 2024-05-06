@@ -66,6 +66,7 @@
                         </tr>
                        
                         <tr> 
+                           
                         <td class="tg-0lax"colspan="6" style="font-size:12px; font-weight:bold;">
                                     @foreach($item['productName'] as $index => $pro)
                                         {{ $pro }}
