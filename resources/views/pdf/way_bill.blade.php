@@ -46,7 +46,7 @@
 <body>
     <div class="row">
         @foreach ($data as $item)
-            <div class="col-6 mb-3">
+            <div class="col-6 mb-2">
                 <table class="tg">
                     <thead>
                         <tr>
@@ -65,8 +65,15 @@
                                 {{ $item['customerMobile'] }} / {{ $item['customerMobile2'] }} </td>
                         </tr>
                        
-                        <tr>
-                            <td class="tg-0lax"colspan="6" style="font-size:12px; font-weight:bold;">{{ $item['productName'] }}</td>
+                        <tr> 
+                        <td class="tg-0lax"colspan="6" style="font-size:12px; font-weight:bold;">
+                                    @foreach($item['productName'] as $index => $pro)
+                                        {{ $pro }}
+                                        @if ($index < count($item['productName']) - 1)
+                                            /
+                                        @endif
+                                    @endforeach
+                            </td>
                             <td class="tg-0lax" style="font-size:12px; font-weight:bold;">QTY: {{ $item['quantity'] }}</td>
                            
                             <td class="tg-0lax"  style="font-size:12px; font-weight:bold;">Rs.{{ $item['totalAmount'] }}</td>

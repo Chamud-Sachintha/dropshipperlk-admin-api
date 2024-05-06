@@ -86,7 +86,7 @@ class Order extends Model
     public function find_by_order_number($number) {
         $map['order'] = $number;
 
-        return $this->where($map)->first();
+        return $this->where($map)->get();
     }
 
 
