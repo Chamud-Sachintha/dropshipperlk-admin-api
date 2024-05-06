@@ -45,7 +45,7 @@
 
 <body>
     @php
-        $itemsPerPage = 1;
+        $itemsPerPage = 4;
         $count = 0;
     @endphp
     <div class="row">
@@ -56,8 +56,8 @@
                 @endif
                 <div class="row"> <!-- Open a new row for every 4 items -->
             @endif
-            <div class="col-8 mb-3 pb-4">
-                <table class="tg">
+            <div class="col-4 mb-3 pb-6">
+                <table class="tg" style="width:700px; height:230px;">
                     <thead>
                         <tr>
                             <th class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center> IK Online Store </center></th>
@@ -68,7 +68,7 @@
                             <td class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center>Seller: {{ $item['sellerName'] }}</center></td>
                         </tr>
                         <tr>
-                            <td class="tg-0lax " colspan="8" style="font-size:18px; font-weight:bold;">Customer Details :<br>
+                            <td class="tg-0lax " colspan="8" style="font-size:16px; font-weight:bold;">Customer Details :<br>
                                 {{ $item['customerName'] }},
                                 {{ $item['customerAddress'] }} ,<br>
                                 {{ $item['customerMobile'] }} / {{ $item['customerMobile2'] }}
