@@ -188,12 +188,13 @@ class WayBillPdfPrintController extends Controller
                         } else {
                            
                             $dataList[] = [
-                                'sellerName' => ($value2['reseller_id'] == 0) ? 'Direct purchase' : $this->Seller->find_by_id($value2['reseller_id'])['full_name'],
+                                'sellerName' => ($value2['reseller_id'] == 0) ? 'Direct purchase' : $this->Seller->find_by_id($value2['reseller_id'])['b_name'],
                                 'sellerMobile' => ($value2['reseller_id'] == 0) ? '0718858925' : $this->Seller->find_by_id($value2['reseller_id'])['phone_number'],
                                 'customerName' => $value2['name'],
                                 'paymentMethod' => ($value2['payment_method'] == 1) ? "Bank Deposit" : (($value2['payment_method'] == 2) ? "Cash On Delivery" : ""),
                                 'orderNumber' => $value,
                                 'customerAddress' => $value2['address'],
+                                'customerCity' => $value2['city'],
                                 'customerMobile' => $value2['contact_1'],
                                 'customerMobile2' => $value2['contact_2'],
                                 'totalAmount' => $order_TotalPrice['total_amount'],

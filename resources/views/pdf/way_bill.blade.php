@@ -73,6 +73,12 @@
                                 {{ $item['customerAddress'] }} ,<br>
                                 {{ $item['customerMobile'] }} / {{ $item['customerMobile2'] }}
                             </td>
+                            
+                        </tr>
+                        <tr>
+                        <td class="tg-0lax " colspan="8" style="font-size:16px; font-weight:bold;">
+                                City :  {{ $item['customerCity'] }}
+                            </td>
                         </tr>
                         <tr>
                             <td class="tg-0lax" colspan="6" style="font-size:12px; font-weight:bold;">
