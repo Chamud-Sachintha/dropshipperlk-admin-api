@@ -220,7 +220,8 @@ class WayBillPdfPrintController extends Controller
     public function DownloadExcel(Request $request)
     {
         // You can add validation or authorization logic here if needed
-
+        set_time_limit(300); // 300 seconds = 5 minutes
+        
         $selectedReportType = $request->input('selectedReportType');
         $token = $request->input('token');
         $typerepo ='';
