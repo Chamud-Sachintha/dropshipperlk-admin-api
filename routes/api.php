@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BulkOrderUpdateController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InCourierDetailController;
 use App\Http\Controllers\KYCInformationController;
 use App\Http\Controllers\OrderCancleController;
 use App\Http\Controllers\OrderController;
@@ -67,3 +68,4 @@ Route::middleware('authToken')->post('get-all-ResellerUser', [AuthController::cl
 Route::middleware('authToken')->post('set-resetpass-ResellerUser', [AuthController::class, 'SetResetpassResellerUsers']);
 
 Route::middleware('authToken')->post('bulk-order-update', [BulkOrderUpdateController::class, 'updateBulkOrder']);
+Route::post('get-courier-package-list', [InCourierDetailController::class, 'getPackageReadyOrderList']);

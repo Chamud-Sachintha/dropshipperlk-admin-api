@@ -50,6 +50,20 @@ class AppHelper {
 
         return $imageFileName;
     }
+
+    public function generateUUID() {
+        // Generate a UUID
+        return Str::uuid();
+    }
+
+    public function generateRandomWayBill() {
+        return mt_rand(0, 100000);
+    }
+
+    public function generateRandomNumber($length)
+    {
+        return substr(str_pad(mt_rand(0, pow(10, $length)-1), $length, '0', STR_PAD_LEFT), 0, $length);
+    }
 }
 
 ?>
