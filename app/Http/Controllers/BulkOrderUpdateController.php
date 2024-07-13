@@ -47,15 +47,15 @@ class BulkOrderUpdateController extends Controller
         } if ($orderStatus == "") {
             return $this->AppHelper->responseMessageHandle(0, "Order Status is required.");
         } else {
-            foreach ($orderNumbersList as $eachOrder) {
-                try {
+            try {
+                foreach ($orderNumbersList as $eachOrder) {
                     $info = array();
                     $info['orderId'] = $eachOrder;
                     $info['orderStatus'] = $orderStatus;
     
                     // $resp = $this->Order->update_order_status_by_order($info);
                     $resp = $this->OrderEn->update_order_status_by_order_bulk($info);
-
+    
                     if ($resp) {
                         $profitShareInfo = array();
     
@@ -132,24 +132,71 @@ class BulkOrderUpdateController extends Controller
                             }
                             
                         }
-
+    
                         if ($orderStatus == 4) {
                             $inCourierDetails['order'] = $eachOrder;
                             $inCourierDetails['wayBillNo'] = $this->AppHelper->generateRandomNumber(8);
                             $inCourierDetails['packageCreateStatus'] = 0;
                             $inCourierDetails['createTime'] = $this->AppHelper->day_time();
-
+    
                             $this->InCourierDetail->add_log($inCourierDetails);
                         }
-    
-                        return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
                     } else {
                         return $this->AppHelper->responseMessageHandle(0, "Error Occured.");
                     }
-                } catch (\Exception $e) {
-                    return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
-                }
+                }   
+                
+                return $this->AppHelper->responseMessageHandle(1, "Operation Complete");
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
         }
+    }
+
+    private function isCityinsideColombo($city) {
+        $colombo_cities = [
+            'Colombo-01',
+            'Colombo-02',
+            'Colombo-03',
+            'Colombo-04',
+            'Colombo-05',
+            'Colombo-06',
+            'Colombo-07',
+            'Colombo-08',
+            'Colombo-09',
+            'Colombo-10',
+            'Colombo-11',
+            'Colombo-12',
+            'Colombo-13',
+            'Colombo-14',
+            'Colombo-15',
+        ];
+
+        if (in_array($city, $colombo_cities)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function getCourierCharge($is_colombo, $product_weight) {
+
+        $default_charge = 300;
+        $weight_in_kg = ($product_weight) / 1000;
+
+        if ($weight_in_kg > 1) {
+            $remaining = $weight_in_kg - 1;
+            $round_remaining = ceil($remaining);
+            
+            if ($round_remaining > 0) {
+                $default_charge += ($round_remaining * 50);
+            }
+        }
+
+        if (!$is_colombo) {
+            $default_charge += 50;
+        }
+
+        return $default_charge;
     }
 }

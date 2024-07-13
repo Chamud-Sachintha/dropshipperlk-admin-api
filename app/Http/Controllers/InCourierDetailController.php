@@ -104,8 +104,7 @@ class InCourierDetailController extends Controller
                 $profitShareInfo = array();
 
                 if ($orderStatus == 5) {
-                    $order = $this->OrderEn->get_by_id($orderNumber);
-
+                    $order = $this->OrderEn->get_by_id_bulk($orderNumber);
                     $order_info_p = $this->OrderItems->get_order_by_order_number_new($order->order);
 
                     foreach ($order_info_p as $key => $order_info) {
@@ -204,26 +203,47 @@ class InCourierDetailController extends Controller
         $pendingPackageList = $this->InCourierDetail->get_pending_list();
 
         $pendingListArray = [];
-        foreach ($pendingPackageList as $eachPackage) {
-            $pendingListArray['id'] = $eachPackage['id'];
-            $pendingListArray['orderNumber'] = $eachPackage['order'];
-            $pendingListArray['wayBillNo'] = $eachPackage['way_bill'];
+        foreach ($pendingPackageList as $key => $eachPackage) {
+            $pendingListArray[$key]['id'] = $eachPackage['id'];
+            $pendingListArray[$key]['orderNumber'] = $eachPackage['order'];
+            $pendingListArray[$key]['wayBillNo'] = $eachPackage['way_bill'];
 
             $response = json_decode($this->trackPackageQuery($eachPackage['way_bill']));
 
             if ($response->success == true) {
-                $pendingListArray['packageStatus'] = $response->data->status;
+                $pendingListArray[$key]['packageStatus'] = $response->data->status;
             } else {
-                $pendingListArray['packageStatus'] = $response->message;
+                $pendingListArray[$key]['packageStatus'] = $response->message;
             }
 
             if ($eachPackage->package_create_status == 0) {
-                $pendingListArray['packageCreateStatus'] = "Pending";
+                $pendingListArray[$key]['packageCreateStatus'] = "Pending";
             } else {
-                $pendingListArray['packageCreateStatus'] = "Created";
+                $pendingListArray[$key]['packageCreateStatus'] = "Created";
             }
 
-            $pendingListArray['createTime'] = $eachPackage['create_time'];
+            $orderInfo = $this->OrderEn->get_by_id_bulk($eachPackage['order']);
+
+            if ($orderInfo['order_status'] == 0) {
+                $pendingListArray[$key]['orderStatus'] = "Pending";
+            } else if ($orderInfo['order_status'] == 1) {
+                $pendingListArray[$key]['orderStatus'] = "Hold";
+            } else if ($orderInfo['order_status'] == 2) {
+                $pendingListArray[$key]['orderStatus'] = "Packaging";
+            } else if ($orderInfo['order_status'] == 3) {
+                $pendingListArray[$key]['orderStatus'] = "Cancel";
+            } else if ($orderInfo['order_status'] == 4) {
+                $pendingListArray[$key]['orderStatus'] = "In Courier";
+            } else if ($orderInfo['order_status'] == 5) {
+                $pendingListArray[$key]['orderStatus'] = "Delivered";
+            }else if ($orderInfo['order_status'] == 7) {
+                $pendingListArray[$key]['orderStatus'] = "Complete ";
+            }
+            else {
+                $pendingListArray[$key]['orderStatus'] = "Return Order";
+            }
+
+            $pendingListArray[$key]['createTime'] = $eachPackage['create_time'];
         }
 
         return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $pendingListArray);
@@ -276,5 +296,52 @@ class InCourierDetailController extends Controller
         curl_close($ch); 
 
         return $server_output;
+    }
+
+    private function isCityinsideColombo($city) {
+        $colombo_cities = [
+            'Colombo-01',
+            'Colombo-02',
+            'Colombo-03',
+            'Colombo-04',
+            'Colombo-05',
+            'Colombo-06',
+            'Colombo-07',
+            'Colombo-08',
+            'Colombo-09',
+            'Colombo-10',
+            'Colombo-11',
+            'Colombo-12',
+            'Colombo-13',
+            'Colombo-14',
+            'Colombo-15',
+        ];
+
+        if (in_array($city, $colombo_cities)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function getCourierCharge($is_colombo, $product_weight) {
+
+        $default_charge = 300;
+        $weight_in_kg = ($product_weight) / 1000;
+
+        if ($weight_in_kg > 1) {
+            $remaining = $weight_in_kg - 1;
+            $round_remaining = ceil($remaining);
+            
+            if ($round_remaining > 0) {
+                $default_charge += ($round_remaining * 50);
+            }
+        }
+
+        if (!$is_colombo) {
+            $default_charge += 50;
+        }
+
+        return $default_charge;
     }
 }
