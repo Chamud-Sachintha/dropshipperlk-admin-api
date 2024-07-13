@@ -152,42 +152,4 @@ class BulkOrderUpdateController extends Controller
             }
         }
     }
-
-    private function ceylonxDeliveryOrderPlacement($orderInfo) {
-        $ch = curl_init();
-
-        $appKey = "599c2220-e9db-46f7-9477-cbe8ab69ac71";
-
-        $data = http_build_query(array(
-            'api_key' => $appKey,
-            'waybill' => $orderInfo['wayBill'],
-            'city' => $orderInfo['city'],
-            'client_ref' => $orderInfo['clientRef'],
-            'cod' => $orderInfo['cod'],
-            'recipient' => "test",
-            'address' => "test",
-            'package_type' => $orderInfo['packageType'],
-            'weight' => $orderInfo['weight'],
-            'phone[0]' => $orderInfo['mobileNumber']
-        ));
-
-        curl_setopt($ch, CURLOPT_URL, "https://api.ceylonex.lk/api/v1/create-package");
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $server_output = curl_exec($ch);
-
-        if ($server_output === false) {
-            // Handle error
-            echo 'Curl error: ' . curl_error($ch);
-        } else {
-            // Handle success
-            echo $server_output;
-        }
-
-        curl_close($ch);
-        return $server_output;
-    }
 }

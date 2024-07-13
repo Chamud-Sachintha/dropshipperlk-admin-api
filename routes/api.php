@@ -69,3 +69,4 @@ Route::middleware('authToken')->post('set-resetpass-ResellerUser', [AuthControll
 
 Route::middleware('authToken')->post('bulk-order-update', [BulkOrderUpdateController::class, 'updateBulkOrder']);
 Route::post('get-courier-package-list', [InCourierDetailController::class, 'getPackageReadyOrderList']);
+Route::post('create-package', [InCourierDetailController::class, 'createCourierPackage']);

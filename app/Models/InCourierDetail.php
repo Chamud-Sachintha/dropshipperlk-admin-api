@@ -25,8 +25,20 @@ class InCourierDetail extends Model
         return $this->create($map);
     }
 
+    public function delete_by_id($id) {
+        $map['id'] = $id;
+        return $this->where($map)->delete();
+    }
+
     public function get_pending_list() {
         $map['package_create_status'] = 0;
-        return $this->where($map)->get();
+        return $this->get();
+    }
+
+    public function update_package_create_status($info) {
+        $map['order'] = $info['orderNumber'];
+        $map1['package_create_status'] = $info['status'];
+
+        return $this->where($map)->update($map1);
     }
 }
