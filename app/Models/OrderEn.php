@@ -22,6 +22,12 @@ class OrderEn extends Model
         'create_time'
     ];
 
+    public function get_all_orders_query()
+    {
+        // Adjust the query as needed, here it returns all orders
+        return $this->newQuery();
+    }
+
     public function get_all_orders() {
         return $this->all();
     }
@@ -60,6 +66,19 @@ class OrderEn extends Model
         $map1['order_status'] = $info['orderStatus'];
 
         return $this->where($map)->update($map1);
+    }
+
+    public function update_order_status_by_order_bulk($info) {
+        $map['order'] = $info['orderId'];
+        $map1['order_status'] = $info['orderStatus'];
+
+        return $this->where($map)->update($map1);
+    }
+
+    public function get_by_id_bulk($id) {
+        $map['order'] = $id;
+
+        return $this->where($map)->first();
     }
 
     public function get_by_id($id) {
