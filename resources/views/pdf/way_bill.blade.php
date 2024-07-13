@@ -92,6 +92,11 @@
                             <td class="tg-0lax" style="font-size:12px; font-weight:bold;">QTY: {{ $item['quantity'] }}</td>
                             <td class="tg-0lax" style="font-size:12px; font-weight:bold;">Rs.{{ $item['totalAmount'] }}</td>
                         </tr>
+                        <tr>
+                            <td class="tg-0lax text-center" colspan="8" style="font-size:16px; font-weight:bold;">
+                                <img src="data:image/png;base64, {!! $item['barcode'] !!}" alt="Barcode">
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

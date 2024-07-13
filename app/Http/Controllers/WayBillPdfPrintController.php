@@ -11,6 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SimpleExcelExport;
+use App\Models\InCourierDetail;
 use Carbon\Carbon;
 
 
@@ -21,6 +22,7 @@ class WayBillPdfPrintController extends Controller
     private $Seller;
     private $Product;
     private $OrderEn;
+    private $InCourierInfo;
 
     public function __construct()
     {
@@ -29,6 +31,7 @@ class WayBillPdfPrintController extends Controller
         $this->Seller = new Reseller();
         $this->Product = new Product();
         $this->OrderEn = new OrderEn();
+        $this->InCourierInfo = new InCourierDetail();
     }
 
     public function printWayBillPdf(Request $request)
@@ -44,6 +47,13 @@ class WayBillPdfPrintController extends Controller
                 foreach ($order_numbers as $key => $value) {
                     $order_info = $this->Order->find_by_order_number($value);
                     $order_TotalPrice = $this->OrderEn->getOrderInfoByOrderNumber($value);
+
+                    $courier_info = $this->InCourierInfo->find_by_order_id($value);
+
+                    $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+                    $image = $generator->getBarcode($courier_info->way_bill, $generator::TYPE_CODE_128);
+
+                    $base64EncodedData = base64_encode($image);
 
                     foreach ($order_info as $value2) {
 
@@ -76,6 +86,7 @@ class WayBillPdfPrintController extends Controller
                                 'totalAmount' => $order_TotalPrice['total_amount'],
                                 'productName' => [$this->Product->find_by_id($value2['product_id'])['product_name']],
                                 'quantity' => $value2['quantity'],
+                                'barcode' => $base64EncodedData
                             ];
                         }
                     }
