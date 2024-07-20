@@ -60,7 +60,7 @@ class BulkOrderUpdateController extends Controller
                         $profitShareInfo = array();
     
                         if ($orderStatus == 5) {
-                            $order = $this->OrderEn->get_by_id($eachOrder);
+                            $order = $this->OrderEn->get_by_id_bulk($eachOrder);
     
                             $order_info_p = $this->Order->get_order_by_order_number_new($order->order);
     
