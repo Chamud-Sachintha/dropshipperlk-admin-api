@@ -40,4 +40,14 @@ class KYCInformation extends Model
 
         return $this->where($map)->update($map1);
     }
+
+    public function get_pending_user_count(){
+        $map['status'] = 0;
+        return $this->where($map)->count();
+    }
+
+    public function get_aproved_user_count(){
+        $map['status'] = 1;
+        return $this->where($map)->count();
+    }
 }

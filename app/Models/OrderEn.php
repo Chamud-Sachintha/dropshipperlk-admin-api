@@ -146,4 +146,18 @@ class OrderEn extends Model
         return $this->where($map)->count();
     }
 
+    public function get_hold_order_count() {
+        // $map['reseller_id'] = $seller;
+        $map['order_status'] = 1;
+
+        return $this->where($map)->count();
+    }
+
+    public function get_returned_order_count() {
+        // $map['reseller_id'] = $seller;
+        $map['order_status'] = 6;
+
+        return $this->where($map)->count();
+    }
+
 }

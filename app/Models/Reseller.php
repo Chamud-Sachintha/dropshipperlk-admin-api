@@ -67,4 +67,10 @@ class Reseller extends Model
         return $this->where(array('id' => $userId))->update($map);
 
     }
+
+    public function get_total_user_count(){
+        return $this->count();
+    }
+
+    
 }

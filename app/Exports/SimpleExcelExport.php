@@ -79,7 +79,7 @@ class SimpleExcelExport implements FromCollection
             }else{
                 $RefStatus = "-";
             }
-
+          //  DD( $order->address);
                 return [
                     'Order' => $order->order,
                     'Product Name' => $proname->first(),
@@ -105,7 +105,7 @@ class SimpleExcelExport implements FromCollection
     
             $dataArray->prepend($headers);
 
-                return $dataArray;
+              //  return $dataArray;
                
         }
             elseif($this->selectedReportType  == 2)
@@ -180,22 +180,28 @@ class SimpleExcelExport implements FromCollection
     private function getCourierCharge($is_colombo, $product_weight) {
 
         $default_charge = 300;
-        //dd($product_weight);
-        $weight_in_kg = ($product_weight) / 1000;
+        if (!is_numeric($product_weight)) {
+            dd("Product weight must be a numeric value.",$product_weight);
+        }else{
 
-        if ($weight_in_kg > 1) {
-            $remaining = $weight_in_kg - 1;
-            $round_remaining = ceil($remaining);
-            
-            if ($round_remaining > 0) {
-                $default_charge += ($round_remaining * 50);
+            $weight_in_kg = ($product_weight) / 1000;
+  
+            if ($weight_in_kg > 1) {
+               // dd($weight_in_kg);
+                $remaining = $weight_in_kg - 1;
+                $round_remaining = ceil($remaining);
+                
+                if ($round_remaining > 0) {
+                    $default_charge += ($round_remaining * 50);
+                }
+            }
+    
+            if (!$is_colombo) {
+                $default_charge += 50;
             }
         }
-
-        if (!$is_colombo) {
-            $default_charge += 50;
-        }
-
+      
+       
         return $default_charge;
     }
 }

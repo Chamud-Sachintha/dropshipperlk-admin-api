@@ -47,6 +47,7 @@ class KYCInformationController extends Controller
                     $dataList[$key]['backImage'] = $value['back_image_nic'];
                     $dataList[$key]['status'] = $value['status'];
                     $dataList[$key]['createTime'] = $value['create_time']; 
+                    $dataList[$key]['refcode'] = $sellerInfo['code']; 
                 }
 
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
