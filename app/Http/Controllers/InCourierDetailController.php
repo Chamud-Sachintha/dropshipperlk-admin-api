@@ -223,6 +223,7 @@ class InCourierDetailController extends Controller
             }
 
             $orderInfo = $this->OrderEn->get_by_id_bulk($eachPackage['order']);
+            $resellerInfo = $this->Reseller->find_by_id($orderInfo['reseller_id']);
 
             if ($orderInfo['order_status'] == 0) {
                 $pendingListArray[$key]['orderStatus'] = "Pending";
@@ -236,13 +237,22 @@ class InCourierDetailController extends Controller
                 $pendingListArray[$key]['orderStatus'] = "In Courier";
             } else if ($orderInfo['order_status'] == 5) {
                 $pendingListArray[$key]['orderStatus'] = "Delivered";
-            }else if ($orderInfo['order_status'] == 7) {
+            } else if ($orderInfo['order_status'] == 7) {
                 $pendingListArray[$key]['orderStatus'] = "Complete ";
-            }
-            else {
+            } else if ($orderInfo['order_status'] == 8) {
+                $pendingListArray[$key]['orderStatus'] = "Settled ";
+            } else if ($orderInfo['order_status'] == 9) {
+                $pendingListArray[$key]['orderStatus'] = "Return Recieved ";
+            } else if ($orderInfo['order_status'] == 10) {
+                $pendingListArray[$key]['orderStatus'] = "Ready to Change ";
+            } else if ($orderInfo['order_status'] == 11) {
+                $pendingListArray[$key]['orderStatus'] = "Rescheduled ";
+            } else {
                 $pendingListArray[$key]['orderStatus'] = "Return Order";
             }
 
+            $pendingListArray[$key]['resellerName'] = $resellerInfo['b_name'];
+            $pendingListArray[$key]['refCode'] = $resellerInfo['ref_code'];
             $pendingListArray[$key]['createTime'] = $eachPackage['create_time'];
         }
 
