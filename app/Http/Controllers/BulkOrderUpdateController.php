@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\AppHelper;
+use App\Models\city_list;
 use App\Models\InCourierDetail;
 use App\Models\Order;
 use App\Models\OrderCancle;
@@ -24,6 +25,7 @@ class BulkOrderUpdateController extends Controller
     private $ResellProduct;
     private $OrderEn;
     private $InCourierDetail;
+    private $City;
 
     public function __construct()
     {
@@ -36,6 +38,7 @@ class BulkOrderUpdateController extends Controller
         $this->ResellProduct = new ResellProduct();
         $this->OrderEn = new OrderEn();
         $this->InCourierDetail = new InCourierDetail();
+        $this->City = new city_list();
     }
 
     public function updateBulkOrder(Request $request) {
@@ -154,25 +157,9 @@ class BulkOrderUpdateController extends Controller
     }
 
     private function isCityinsideColombo($city) {
-        $colombo_cities = [
-            'Colombo-01',
-            'Colombo-02',
-            'Colombo-03',
-            'Colombo-04',
-            'Colombo-05',
-            'Colombo-06',
-            'Colombo-07',
-            'Colombo-08',
-            'Colombo-09',
-            'Colombo-10',
-            'Colombo-11',
-            'Colombo-12',
-            'Colombo-13',
-            'Colombo-14',
-            'Colombo-15',
-        ];
+        $is_colombo_city = $this->City->validate_city($city, "Colombo");
 
-        if (in_array($city, $colombo_cities)) {
+        if ($is_colombo_city) {
             return true;
         } else {
             return false;
