@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\AppHelper;
 use App\Models\city_list;
+use App\Models\InCourierDetail;
 use App\Models\Order;
 use App\Models\OrderCancle;
 use App\Models\OrderEn;
@@ -25,6 +26,7 @@ class OrderController extends Controller
     private $ResellProduct;
     private $OrderEn;
     private $City;
+    private $InCourierDetails;
 
     public function __construct()
     {
@@ -37,6 +39,7 @@ class OrderController extends Controller
         $this->ResellProduct = new ResellProduct();
         $this->OrderEn = new OrderEn();
         $this->City = new city_list();
+        $this->InCourierDetails = new InCourierDetail();
     }
 
     public function getAllOngoingOrderList(Request $request) {
@@ -57,9 +60,16 @@ class OrderController extends Controller
                     $reseller_info = ($value['reseller_id'] != 0) ? $this->Reseller->find_by_id($value['reseller_id']) : ['full_name' => 'Direct Customer'];
 
                     // $product_info = $this->Product->find_by_id($value['product_id']);
+                    $courier_details = $this->InCourierDetails->find_by_order_id($value['order']);
 
                     $dataList[$key]['id'] = $value['id'];
                     $dataList[$key]['order'] = $value['order'];
+                    $dataList[$key]['wayBill'] = "N/A";
+
+                    if ($courier_details) {
+                        $dataList[$key]['wayBill'] = $courier_details['way_bill'];
+                    }
+
                     // $dataList[$key]['productName'] = $product_info['product_name'];
                     if ($value['reseller_id'] == 0) {
                         $dataList[$key]['resellerName'] = 'Direct Customer';
