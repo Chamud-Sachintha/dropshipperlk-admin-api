@@ -29,6 +29,16 @@ class Order extends Model
         'create_time'
     ];
 
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function orderEn()
+    {
+        return $this->hasOne(OrderEn::class, 'order', 'order');
+    }
+
     public function get_all_uncomplete() {
         // $map['order_status'] = array('order_status', '!=', 5);
 
