@@ -86,7 +86,8 @@ class WayBillPdfPrintController extends Controller
                                 'totalAmount' => $order_TotalPrice['total_amount'],
                                 'productName' => [$this->Product->find_by_id($value2['product_id'])['product_name']],
                                 'quantity' => $value2['quantity'],
-                                'barcode' => $base64EncodedData
+                                'barcode' => $base64EncodedData,
+                                'wayBillNumber' => $courier_info->way_bill
                             ];
                         }
                     }

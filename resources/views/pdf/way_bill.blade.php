@@ -58,11 +58,11 @@
             @endif
             <div class="col-4 mb-3 pb-6">
                 <table class="tg" style="width:700px; height:230px;">
-                    <thead>
+                    {{-- <thead>
                         <tr>
                             <th class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center> IK Online Store </center></th>
                         </tr>
-                    </thead>
+                    </thead> --}}
                     <tbody>
                         <tr>
                             <td class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center>Seller: {{ $item['sellerName'] }}</center></td>
@@ -95,6 +95,7 @@
                         <tr>
                             <td class="tg-0lax text-center" colspan="8" style="font-size:16px; font-weight:bold;">
                                 <img src="data:image/png;base64, {!! $item['barcode'] !!}" alt="Barcode">
+                                <p class="text-center">{{ $item['wayBillNumber'] }}</p>
                             </td>
                         </tr>
                     </tbody>
