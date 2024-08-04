@@ -75,8 +75,6 @@ class InCourierDetailController extends Controller
 
             $response = json_decode($this->ceylonxDeliveryOrderPlacement($ceylonxInfo));
 
-            dd($ceylonxInfo);
-
             if ($response->success == true) {
                 $packageUpdateInfo['orderNumber'] = $orderNumber;
                 $packageUpdateInfo['status'] = 1;
