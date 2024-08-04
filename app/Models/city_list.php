@@ -10,7 +10,7 @@ class city_list extends Model
     use HasFactory;
 
     public function validate_city($city, $district) {
-        $map['district'] = $district;
+        $map['discrict'] = $district;
         $map['city'] = $city;
 
         return $this->where($map)->first();
