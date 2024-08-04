@@ -167,7 +167,7 @@ class SimpleExcelExport implements FromCollection
 
     private function getCourierCharge($is_colombo, $product_weight)
     {
-        $default_charge = 300;
+        $default_charge = 350;
 
         if (!is_numeric($product_weight)) {
             throw new InvalidArgumentException("Product weight must be a numeric value.");

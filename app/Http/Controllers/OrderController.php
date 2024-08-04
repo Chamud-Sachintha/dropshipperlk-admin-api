@@ -522,7 +522,7 @@ class OrderController extends Controller
 
     private function getCourierCharge($is_colombo, $product_weight) {
 
-        $default_charge = 300;
+        $default_charge = 350;
         $weight_in_kg = ($product_weight) / 1000;
 
         if ($weight_in_kg > 1) {
