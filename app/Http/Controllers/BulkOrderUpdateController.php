@@ -180,9 +180,9 @@ class BulkOrderUpdateController extends Controller
             }
         }
 
-        if (!$is_colombo) {
-            $default_charge += 50;
-        }
+        // if (!$is_colombo) {
+        //     $default_charge += 50;
+        // }
 
         return $default_charge;
     }
