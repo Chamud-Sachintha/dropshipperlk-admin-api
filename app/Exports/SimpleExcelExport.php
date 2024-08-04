@@ -75,6 +75,13 @@ class SimpleExcelExport implements FromCollection
 
                 $refundStatus = $orderEn->order_status == 6 && $orderEn->return_status == 1 ? "Refunded" : "No Refund";
 
+                $wayBillNo = null;
+                if ($courier_info != null) {
+                    $wayBillNo = $courier_info->way_bill;
+                } else {
+                    $wayBillNo = "-";
+                }
+
                 return [
                     'Order' => $order->order,
                     'Product Name' => $product->product_name,
@@ -90,7 +97,7 @@ class SimpleExcelExport implements FromCollection
                     'Quantity' => $order->quantity,
                     'Total Amount' => $fullAmount,
                     'Order Return Status' => $refundStatus,
-                    'WayBill' => $courier_info->way_bill
+                    'WayBill' => $wayBillNo
                 ];
             } catch (\Exception $e) {
                 // Log the error and skip this order
