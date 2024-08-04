@@ -8,6 +8,7 @@ use App\Models\Reseller;
 use App\Models\OrderEn;
 use App\Models\OrderCancle;
 use App\Models\BankDetails;
+use App\Models\InCourierDetail;
 use Exception;
 use InvalidArgumentException;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -22,12 +23,14 @@ class SimpleExcelExport implements FromCollection
 
     private $Orders;
     private $Reseller;
+    private $InCourier;
 
     public function __construct($selectedReportType)
     {
         $this->selectedReportType = $selectedReportType;
         $this->Orders = new Order();
         $this->Reseller = new Reseller();
+        $this->InCourier = new InCourierDetail();
     }
 
     public function collection()
@@ -48,6 +51,7 @@ class SimpleExcelExport implements FromCollection
 
         $dataArray = $orders->map(function ($order) {
             try {
+                $courier_info = $this->InCourier->find_by_order_id($order->order);
                 $product = $order->product;
                 $orderEn = $order->orderEn;
 
@@ -86,6 +90,7 @@ class SimpleExcelExport implements FromCollection
                     'Quantity' => $order->quantity,
                     'Total Amount' => $fullAmount,
                     'Order Return Status' => $refundStatus,
+                    'WayBill' => $courier_info->way_bill
                 ];
             } catch (\Exception $e) {
                 // Log the error and skip this order
@@ -96,7 +101,7 @@ class SimpleExcelExport implements FromCollection
 
         $headers = [
             'Order ID', 'Product Name', 'Tracking No', 'Courier Name', 'Order Status', 'Name', 'Address',
-            'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount', 'Order Return Status',
+            'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount', 'Order Return Status','WayBill'
         ];
 
         $dataArray->prepend($headers);
