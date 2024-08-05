@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\AppHelper;
 use App\Models\city_list;
+use App\Models\Configs;
 use App\Models\InCourierDetail;
 use App\Models\Order;
 use App\Models\OrderCancle;
@@ -26,6 +27,7 @@ class BulkOrderUpdateController extends Controller
     private $OrderEn;
     private $InCourierDetail;
     private $City;
+    private $Configs;
 
     public function __construct()
     {
@@ -39,6 +41,7 @@ class BulkOrderUpdateController extends Controller
         $this->OrderEn = new OrderEn();
         $this->InCourierDetail = new InCourierDetail();
         $this->City = new city_list();
+        $this->Configs = new Configs();
     }
 
     public function updateBulkOrder(Request $request) {
@@ -138,7 +141,8 @@ class BulkOrderUpdateController extends Controller
     
                         if ($orderStatus == 4) {
                             $inCourierDetails['order'] = $eachOrder;
-                            $inCourierDetails['wayBillNo'] = $this->AppHelper->generateRandomNumber(8);
+                            // $inCourierDetails['wayBillNo'] = $this->AppHelper->generateRandomNumber(8);
+                            $inCourierDetails['wayBillNo'] = $this->generateWayBillNumber();
                             $inCourierDetails['packageCreateStatus'] = 0;
                             $inCourierDetails['createTime'] = $this->AppHelper->day_time();
     
@@ -154,6 +158,26 @@ class BulkOrderUpdateController extends Controller
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
         }
+    }
+
+    private function generateWayBillNumber() {
+        $config_info = $this->Configs->find_by_config("wayBillRange");
+
+        $rangeValue = explode("-", $config_info->value);
+        $finalWayBillNumber = null;
+        while (true) {
+            $wayBillNumber = rand($rangeValue[0], $rangeValue[1]);
+            $isBillAlreadyHave = $this->InCourierDetail->find_by_wayBill($wayBillNumber);
+
+            if ($isBillAlreadyHave != null) {
+                continue;
+            } else {
+                $finalWayBillNumber = $wayBillNumber;
+                break;
+            }
+        }
+
+        return $finalWayBillNumber;
     }
 
     private function isCityinsideColombo($city) {

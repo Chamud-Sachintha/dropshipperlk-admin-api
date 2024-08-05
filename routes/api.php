@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BulkOrderUpdateController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ConfigsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InCourierDetailController;
 use App\Http\Controllers\KYCInformationController;
@@ -71,3 +72,6 @@ Route::middleware('authToken')->post('bulk-order-update', [BulkOrderUpdateContro
 Route::middleware('authToken')->post('get-courier-package-list', [InCourierDetailController::class, 'getPackageReadyOrderList']);
 Route::middleware('authToken')->post('create-package', [InCourierDetailController::class, 'createCourierPackage']);
 Route::middleware('authToken')->post('update-courier-status', [InCourierDetailController::class, 'updatePackageStatus']);
+
+Route::middleware('authToken')->post('add-config', [ConfigsController::class, 'addNewConfig']);
+Route::middleware('authToken')->post('get-config-by-name', [ConfigsController::class, 'getConfigByName']);

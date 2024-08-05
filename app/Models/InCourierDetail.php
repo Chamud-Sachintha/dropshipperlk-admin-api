@@ -46,4 +46,10 @@ class InCourierDetail extends Model
 
         return $this->where($map)->update($map1);
     }
+
+    public function find_by_wayBill($wayBill) {
+        $map['way_bill'] = $wayBill;
+
+        return $this->where($map)->first();
+    }
 }
