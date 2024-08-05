@@ -65,7 +65,7 @@ class InCourierDetailController extends Controller
             $ceylonxInfo = array();
             $ceylonxInfo['wayBill'] = $wayBillNo;
             $ceylonxInfo['city'] = $orderItemInfo[0]->city;
-            $ceylonxInfo['clientRef'] = $orderItemInfo[0]->name;
+            $ceylonxInfo['clientRef'] = $orderNumber;
             $ceylonxInfo['cod'] = $orderInfo->total_amount;
             $ceylonxInfo['recipient'] = $orderItemInfo[0]->name;
             $ceylonxInfo['address'] = $orderItemInfo[0]->address;
