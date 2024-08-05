@@ -207,6 +207,13 @@ class InCourierDetailController extends Controller
 
         $pendingListArray = [];
         foreach ($pendingPackageList as $key => $eachPackage) {
+
+            $orderInfo = $this->OrderEn->get_by_id_bulk($eachPackage['order']);
+
+            if ($orderInfo['order_status'] > 4) {
+                continue;
+            }
+
             $pendingListArray[$key]['id'] = $eachPackage['id'];
             $pendingListArray[$key]['orderNumber'] = $eachPackage['order'];
             $pendingListArray[$key]['wayBillNo'] = $eachPackage['way_bill'];
@@ -225,7 +232,6 @@ class InCourierDetailController extends Controller
                 $pendingListArray[$key]['packageCreateStatus'] = "Created";
             }
 
-            $orderInfo = $this->OrderEn->get_by_id_bulk($eachPackage['order']);
             $resellerInfo = $this->Reseller->find_by_id($orderInfo['reseller_id']);
 
             if ($orderInfo['order_status'] == 0) {
