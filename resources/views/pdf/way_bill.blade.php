@@ -70,16 +70,16 @@
                         <tr>
                             <td class="tg-0lax " colspan="8" style="font-size:16px; font-weight:bold;">Customer Details :<br>
                                 {{ $item['customerName'] }},
-                                {{ $item['customerAddress'] }} ,<br>
+                                {{ $item['customerAddress'] }} - {{ $item['customerCity'] }} ,<br>
                                 {{ $item['customerMobile'] }} / {{ $item['customerMobile2'] }}
                             </td>
                             
                         </tr>
-                        <tr>
-                        <td class="tg-0lax " colspan="8" style="font-size:16px; font-weight:bold;">
+                        {{-- <tr>
+                            <td class="tg-0lax " colspan="8" style="font-size:16px; font-weight:bold;">
                                 City :  {{ $item['customerCity'] }}
                             </td>
-                        </tr>
+                        </tr> --}}
                         <tr>
                             <td class="tg-0lax" colspan="6" style="font-size:12px; font-weight:bold;">
                                 @foreach($item['productName'] as $index => $pro)

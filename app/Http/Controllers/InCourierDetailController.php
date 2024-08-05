@@ -271,8 +271,8 @@ class InCourierDetailController extends Controller
             'city' => $orderInfo['city'],
             'client_ref' => $orderInfo['clientRef'],
             'cod' => $orderInfo['cod'],
-            'recipient' => "test",
-            'address' => "test",
+            'recipient' => $orderInfo['recipient'],
+            'address' => $orderInfo['address'],
             'package_type' => $orderInfo['packageType'],
             'weight' => $orderInfo['weight'],
             'phone[0]' => $orderInfo['mobileNumber']
