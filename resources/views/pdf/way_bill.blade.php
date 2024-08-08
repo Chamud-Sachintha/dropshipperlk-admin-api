@@ -40,6 +40,13 @@
             text-align: left;
             vertical-align: top
         }
+
+        /* Page break after every 4 tables when printing */
+        @media print {
+            .page-break {
+                page-break-after: always;
+            }
+        }
     </style>
 </head>
 
@@ -48,67 +55,55 @@
         $itemsPerPage = 4;
         $count = 0;
     @endphp
-    <div class="row">
-        @foreach ($data as $item)
-            @if ($count % $itemsPerPage == 0)
-                @if ($count != 0)
-                    </div> <!-- Close the previous row if not the first one -->
-                @endif
-                <div class="row"> <!-- Open a new row for every 4 items -->
+    @foreach ($data as $item)
+        @if ($count % $itemsPerPage == 0)
+            @if ($count != 0)
+                </div> <!-- Close the previous row if not the first one -->
+                <div class="page-break"></div> <!-- Page break after every 4 tables -->
             @endif
-            <div class="col-4 mb-3 pb-6">
-                <table class="tg" style="width:700px; height:230px;">
-                    {{-- <thead>
-                        <tr>
-                            <th class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center> IK Online Store </center></th>
-                        </tr>
-                    </thead> --}}
-                    <tbody>
-                        <tr>
-                            <td class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center>Seller: {{ $item['sellerName'] }}</center></td>
-                        </tr>
-                        <tr>
-                            <td class="tg-0lax " colspan="8" style="font-size:16px; font-weight:bold;">Customer Details :<br>
-                                {{ $item['customerName'] }},
-                                {{ $item['customerAddress'] }} - {{ $item['customerCity'] }} ,<br>
-                                {{ $item['customerMobile'] }} / {{ $item['customerMobile2'] }}
-                            </td>
-                            
-                        </tr>
-                        {{-- <tr>
-                            <td class="tg-0lax " colspan="8" style="font-size:16px; font-weight:bold;">
-                                City :  {{ $item['customerCity'] }}
-                            </td>
-                        </tr> --}}
-                        <tr>
-                            <td class="tg-0lax" colspan="6" style="font-size:12px; font-weight:bold;">
-                                @foreach($item['productName'] as $index => $pro)
-                                    {{ $pro }}
-                                    @if ($index < count($item['productName']) - 1)
-                                        /
-                                    @endif
-                                @endforeach
-                            </td>
-                            <td class="tg-0lax" style="font-size:12px; font-weight:bold;">QTY: {{ $item['quantity'] }}</td>
-                            <td class="tg-0lax" style="font-size:12px; font-weight:bold;">Rs.{{ $item['totalAmount'] }}</td>
-                        </tr>
-                        <tr>
-                            <td class="tg-0lax text-center" colspan="8" style="font-size:16px; font-weight:bold;">
-                                <img src="data:image/png;base64, {!! $item['barcode'] !!}" alt="Barcode">
-                                <p class="text-center">{{ $item['wayBillNumber'] }}</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            @php
-                $count++;
-            @endphp
-        @endforeach
-        @if ($count > 0)
-            </div> <!-- Close the last row if there are items -->
+            <div class="row"> <!-- Open a new row for every 4 items -->
         @endif
-    </div>
+        <div class="col-12 mb-3 pb-6">
+            <table class="tg" style="width:700px; height:230px;">
+                <tbody>
+                    <tr>
+                        <td class="tg-0lax" colspan="8" style="font-size:12px; font-weight:bold;"><center>Seller: {{ $item['sellerName'] }}</center></td>
+                    </tr>
+                    <tr>
+                        <td class="tg-0lax " colspan="8" style="font-size:16px; font-weight:bold;">Customer Details :<br>
+                            {{ $item['customerName'] }},
+                            {{ $item['customerAddress'] }} - {{ $item['customerCity'] }} ,<br>
+                            {{ $item['customerMobile'] }} / {{ $item['customerMobile2'] }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-0lax" colspan="6" style="font-size:12px; font-weight:bold;">
+                            @foreach($item['productName'] as $index => $pro)
+                                {{ $pro }}
+                                @if ($index < count($item['productName']) - 1)
+                                    /
+                                @endif
+                            @endforeach
+                        </td>
+                        <td class="tg-0lax" style="font-size:12px; font-weight:bold;">QTY: {{ $item['quantity'] }}</td>
+                        <td class="tg-0lax" style="font-size:12px; font-weight:bold;">Rs.{{ $item['totalAmount'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-0lax text-center" colspan="8" style="font-size:16px; font-weight:bold;">
+                            <img src="data:image/png;base64, {!! $item['barcode'] !!}" alt="Barcode">
+                            <p class="text-center">{{ $item['wayBillNumber'] }}</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @php
+            $count++;
+        @endphp
+    @endforeach
+    @if ($count > 0)
+        </div> <!-- Close the last row if there are items -->
+    @endif
 </body>
 
 </html>
