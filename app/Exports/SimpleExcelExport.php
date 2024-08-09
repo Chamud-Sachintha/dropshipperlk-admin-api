@@ -135,7 +135,7 @@ class SimpleExcelExport implements FromCollection
                 'Bank Name' => $reseller->bank_name,
                 'Account Number' => $reseller->account_number,
                 'Branch' => $reseller->branch_code,
-                'Reseller Bank Name' => $reseller->full_name, // Make sure 'reseller_name' is correct
+                'Reseller Bank Name' => $reseller->resellr_name, // Make sure 'reseller_name' is correct
             ];
         });
 
