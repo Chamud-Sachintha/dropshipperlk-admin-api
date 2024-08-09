@@ -25,6 +25,11 @@ class Reseller extends Model
         'create_time'
     ];
 
+    public function bankDetails()
+    {
+        return $this->hasOne(BankDetails::class);
+    }
+
     public function find_by_id($sellerId) {
         $map['id'] = $sellerId;
 

@@ -18,6 +18,11 @@ class BankDetails extends Model
         'create_time'
     ];
 
+    public function reseller()
+    {
+        return $this->belongsTo(Reseller::class);
+    }
+
     public function find_id($id){
         $map['reselller_id'] = $id;
 
