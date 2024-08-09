@@ -124,20 +124,18 @@ class SimpleExcelExport implements FromCollection
     private function getResellersBankDetailsReport()
     {
         $resellers = DB::table('resellers')
-                        ->join('bank_details', 'resellers.id', '=', 'bank_details.reselller_id')
-                        ->select('resellers.*', 'bank_details.bank_name', 'bank_details.account_number')
+                        ->join('bank_details', 'resellers.id', '=', 'bank_details.reseller_id')
+                        ->select('resellers.full_name', 'resellers.code', 'bank_details.bank_name', 'bank_details.account_number', 'bank_details.branch_code', 'bank_details.reseller_name')
                         ->get();
 
         $dataArray = $resellers->map(function ($reseller) {
-            $bankDetails = $reseller->bankDetails;
-
             return [
                 'Reseller name' => $reseller->full_name,
                 'Referral Code' => $reseller->code,
-                'Bank Name' => $bankDetails->bank_name,
-                'Account Number' => $bankDetails->account_number,
-                'Branch' => $bankDetails->branch_code,
-                'Reseller Bank Name' => $bankDetails->resellr_name,
+                'Bank Name' => $reseller->bank_name,
+                'Account Number' => $reseller->account_number,
+                'Branch' => $reseller->branch_code,
+                'Reseller Bank Name' => $reseller->reseller_name, // Make sure 'reseller_name' is correct
             ];
         });
 
@@ -147,7 +145,7 @@ class SimpleExcelExport implements FromCollection
 
         $dataArray->prepend($headers);
 
-        return $dataArray;
+        return $dataArray->all();
     }
 
     private function getResellersPayoutReport()
