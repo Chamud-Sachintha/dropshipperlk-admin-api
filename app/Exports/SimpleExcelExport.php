@@ -124,7 +124,7 @@ class SimpleExcelExport implements FromCollection
     private function getResellersBankDetailsReport()
     {
         $resellers = DB::table('resellers')
-                        ->join('bank_details', 'resellers.id', '=', 'bank_details.reseller_id')
+                        ->join('bank_details', 'resellers.id', '=', 'bank_details.reselller_id')
                         ->select('resellers.*', 'bank_details.bank_name', 'bank_details.account_number')
                         ->get();
 
