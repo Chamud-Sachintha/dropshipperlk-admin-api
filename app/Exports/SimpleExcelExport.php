@@ -10,6 +10,7 @@ use App\Models\OrderCancle;
 use App\Models\BankDetails;
 use App\Models\InCourierDetail;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Facades\Excel;
@@ -122,7 +123,10 @@ class SimpleExcelExport implements FromCollection
 
     private function getResellersBankDetailsReport()
     {
-        $resellers = Reseller::with('bankDetails')->get();
+        $resellers = DB::table('resellers')
+                        ->join('bank_details', 'resellers.id', '=', 'bank_details.reseller_id')
+                        ->select('resellers.*', 'bank_details.bank_name', 'bank_details.account_number')
+                        ->get();
 
         $dataArray = $resellers->map(function ($reseller) {
             $bankDetails = $reseller->bankDetails;
