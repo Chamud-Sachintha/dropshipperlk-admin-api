@@ -125,7 +125,7 @@ class SimpleExcelExport implements FromCollection
     {
         $resellers = DB::table('resellers')
                         ->join('bank_details', 'resellers.id', '=', 'bank_details.reselller_id')
-                        ->select('resellers.full_name', 'resellers.code', 'bank_details.bank_name', 'bank_details.account_number', 'bank_details.branch_code', 'bank_details.reseller_name')
+                        ->select('resellers.full_name', 'resellers.code', 'bank_details.bank_name', 'bank_details.account_number', 'bank_details.branch_code', 'bank_details.resellr_name')
                         ->get();
 
         $dataArray = $resellers->map(function ($reseller) {
