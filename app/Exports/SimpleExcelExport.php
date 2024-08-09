@@ -145,7 +145,7 @@ class SimpleExcelExport implements FromCollection
 
         $dataArray->prepend($headers);
 
-        return $dataArray->all();
+        return $dataArray;
     }
 
     private function getResellersPayoutReport()
