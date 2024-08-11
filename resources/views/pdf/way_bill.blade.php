@@ -41,7 +41,7 @@
             vertical-align: top
         }
 
-        /* Page break after every 4 tables when printing */
+        /* Page break after every 3 tables when printing */
         @media print {
             .page-break {
                 page-break-after: always;
@@ -52,16 +52,16 @@
 
 <body>
     @php
-        $itemsPerPage = 4;
+        $itemsPerPage = 3; <!-- Change to 3 items per page -->
         $count = 0;
     @endphp
     @foreach ($data as $item)
         @if ($count % $itemsPerPage == 0)
             @if ($count != 0)
                 </div> <!-- Close the previous row if not the first one -->
-                <div class="page-break"></div> <!-- Page break after every 4 tables -->
+                <div class="page-break"></div> <!-- Page break after every 3 tables -->
             @endif
-            <div class="row"> <!-- Open a new row for every 4 items -->
+            <div class="row"> <!-- Open a new row for every 3 items -->
         @endif
         <div class="col-12 mb-3 pb-6">
             <table class="tg" style="width:700px; height:230px;">
