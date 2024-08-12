@@ -215,12 +215,12 @@ class InCourierDetailController extends Controller
             ->get()
             ->map(function ($eachPackage) {
                 $response = json_decode($this->trackPackageQuery($eachPackage->way_bill));
-                dd($response);
+ 
                 return [
                     'id' => $eachPackage->id,
                     'orderNumber' => $eachPackage->order,
                     'wayBillNo' => $eachPackage->way_bill,
-                    'packageStatus' => $response->success ? $response->data->status : $response->message,
+                    'packageStatus' => $response->data->status,
                     'packageCreateStatus' => $eachPackage->package_create_status == 0 ? "Pending" : "Created",
                     'orderStatus' => $this->mapOrderStatus($eachPackage->order_status),
                     'resellerName' => $eachPackage->b_name,
