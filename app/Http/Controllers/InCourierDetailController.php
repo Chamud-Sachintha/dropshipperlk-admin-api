@@ -215,7 +215,7 @@ class InCourierDetailController extends Controller
             ->get()
             ->map(function ($eachPackage) {
                 $response = json_decode($this->trackPackageQuery($eachPackage->way_bill));
-    
+                dd($response);
                 return [
                     'id' => $eachPackage->id,
                     'orderNumber' => $eachPackage->order,
