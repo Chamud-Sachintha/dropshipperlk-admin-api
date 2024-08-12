@@ -207,29 +207,48 @@ class InCourierDetailController extends Controller
     }
 
     public function getPackageReadyOrderList(Request $request) {
+        // Fetch all the necessary data in one query
         $pendingListArray = DB::table('in_courier_details')
             ->join('order_ens', 'in_courier_details.order', '=', 'order_ens.order')
             ->join('resellers', 'order_ens.reseller_id', '=', 'resellers.id')
             ->select('in_courier_details.*', 'order_ens.order_status', 'resellers.b_name', 'resellers.ref_code')
             ->where('order_ens.order_status', '<=', 4)
-            ->get()
-            ->map(function ($eachPackage) {
-                $response = json_decode($this->trackPackageQuery($eachPackage->way_bill));
- 
-                return [
-                    'id' => $eachPackage->id,
-                    'orderNumber' => $eachPackage->order,
-                    'wayBillNo' => $eachPackage->way_bill,
-                    'packageStatus' => isset($response->data) ? $response->data->status : 'Unknown',
-                    'packageCreateStatus' => $eachPackage->package_create_status == 0 ? "Pending" : "Created",
-                    'orderStatus' => $this->mapOrderStatus($eachPackage->order_status),
-                    'resellerName' => $eachPackage->b_name,
-                    'refCode' => $eachPackage->ref_code,
-                    'createTime' => $eachPackage->create_time,
-                ];
-            });
+            ->get();
     
-        return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $pendingListArray);
+        // Track all packages in a single batch if possible
+        $wayBillNumbers = $pendingListArray->pluck('way_bill')->toArray();
+        $trackingResponses = $this->batchTrackPackages($wayBillNumbers);
+    
+        // Map the results
+        $result = $pendingListArray->map(function ($eachPackage) use ($trackingResponses) {
+            $response = $trackingResponses[$eachPackage->way_bill] ?? null;
+    
+            return [
+                'id' => $eachPackage->id,
+                'orderNumber' => $eachPackage->order,
+                'wayBillNo' => $eachPackage->way_bill,
+                'packageStatus' => isset($response->data) ? $response->data->status : 'Unknown',
+                'packageCreateStatus' => $eachPackage->package_create_status == 0 ? "Pending" : "Created",
+                'orderStatus' => $this->mapOrderStatus($eachPackage->order_status),
+                'resellerName' => $eachPackage->b_name,
+                'refCode' => $eachPackage->ref_code,
+                'createTime' => $eachPackage->create_time,
+            ];
+        });
+    
+        return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $result);
+    }
+    
+    // Example of batchTrackPackages method
+    protected function batchTrackPackages(array $wayBillNumbers) {
+        // This function should handle the logic of making a single request
+        // to track multiple waybill numbers at once if your API supports it.
+        // Return an associative array with waybill numbers as keys and their responses as values.
+        $trackingResponses = [];
+        foreach ($wayBillNumbers as $wayBill) {
+            $trackingResponses[$wayBill] = json_decode($this->trackPackageQuery($wayBill));
+        }
+        return $trackingResponses;
     }
     
     private function mapOrderStatus($status) {
