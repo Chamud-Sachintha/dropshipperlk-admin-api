@@ -52,7 +52,7 @@
 
 <body>
     @php
-        $itemsPerPage = 3; <!-- Change to 3 items per page -->
+        $itemsPerPage = 3;
         $count = 0;
     @endphp
     @foreach ($data as $item)
