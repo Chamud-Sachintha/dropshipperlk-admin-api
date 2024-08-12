@@ -220,7 +220,7 @@ class InCourierDetailController extends Controller
                     'id' => $eachPackage->id,
                     'orderNumber' => $eachPackage->order,
                     'wayBillNo' => $eachPackage->way_bill,
-                    'packageStatus' => $response->data->status,
+                    'packageStatus' => isset($response->data) ? $response->data->status : 'Unknown',
                     'packageCreateStatus' => $eachPackage->package_create_status == 0 ? "Pending" : "Created",
                     'orderStatus' => $this->mapOrderStatus($eachPackage->order_status),
                     'resellerName' => $eachPackage->b_name,
