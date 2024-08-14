@@ -38,7 +38,7 @@
 
         .tg .tg-0lax {
             text-align: left;
-            vertical-align: top
+            vertical-align: top;
         }
 
         /* Page break after every 3 tables when printing */
@@ -100,8 +100,12 @@
         @php
             $count++;
         @endphp
+        @if ($count % $itemsPerPage == 0)
+            </div> <!-- Close the row after 3 items -->
+            <div class="page-break"></div> <!-- Add a page break after the row -->
+        @endif
     @endforeach
-    @if ($count > 0)
+    @if ($count % $itemsPerPage != 0)
         </div> <!-- Close the last row if there are items -->
     @endif
 </body>
