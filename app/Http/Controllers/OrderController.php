@@ -14,6 +14,7 @@ use App\Models\Reseller;
 use App\Models\ResellProduct;
 use Illuminate\Http\Request;
 use DateTime;
+use Exception;
 
 class OrderController extends Controller
 {
@@ -65,6 +66,7 @@ class OrderController extends Controller
                     $dataList[$key]['id'] = $value['id'];
                     $dataList[$key]['order'] = $value['order'];
                     $dataList[$key]['wayBill'] = "N/A";
+                    $dataList[$key]['isStorePickupEnable'] = false;
 
                     if ($courier_details) {
                         $dataList[$key]['wayBill'] = $courier_details['way_bill'];
@@ -112,7 +114,8 @@ class OrderController extends Controller
                         $dataList[$key]['paymentMethod'] = "Cash On Delivery";
                     }
                     else{
-                        $dataList[$key]['paymentMethod'] = "KOKO Payment";
+                        $dataList[$key]['paymentMethod'] = "Store Pickup";
+                        $dataList[$key]['isStorePickupEnable'] = true;
                     }
                     
 
@@ -245,7 +248,11 @@ class OrderController extends Controller
             try {
                 $order = $this->OrderEn->get_by_id($orderId);
                 $order_info = $this->Order->get_order_by_order_number_new($order->order);
-              
+
+                $order_name = $this->Order->get_order_by_order_number_new($order->order)->pluck('name')->first();
+                $order_address = $this->Order->get_order_by_order_number_new($order->order)->pluck('address')->first();
+                $order_contact_1 = $this->Order->get_order_by_order_number_new($order->order)->pluck('contact_1')->first();
+                $order_contact_2 = $this->Order->get_order_by_order_number_new($order->order)->pluck('contact_2')->first();
 
                 $direct_commision = 0;
                 $team_commision = 0;
@@ -272,6 +279,11 @@ class OrderController extends Controller
                     $direct_commision += $product_info['direct_commision'];
                     $team_commision += $product_info['team_commision'];
                 }
+
+                $dataList['resellname'] = $order_name;
+                $dataList['reselladdress'] = $order_address;
+                $dataList['resellcontact_1'] = $order_contact_1;
+                $dataList['resellcontact_2'] = $order_contact_2;
 
                 $order_info = $this->OrderEn->getOrderInfoByOrderNumber($order->order);
 
@@ -322,6 +334,14 @@ class OrderController extends Controller
                 $dataList['directCommision'] = $direct_commision;
                 $dataList['teamCommision'] = $team_commision;
                 $dataList['totalAmount'] = $order_info['total_amount'];
+
+                if ($order_info['remark'] != null || !empty($order_info['remark'])) {
+                    $dataList['remark'] = $order_info['remark'];
+                } else {
+                    $dataList['remark'] = null;
+                }
+
+                $dataList['remark'] = $order_info['remark'];
                
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
             } catch (\Exception $e) {
@@ -408,7 +428,12 @@ class OrderController extends Controller
                             $profitShareInfo['totalAmount'] = $order_info['total_amount'];
 
                             $is_city_colombo = $this->isCityinsideColombo($order_info['city']);
-                            $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
+                            
+                            $courir_charge = 0;
+                                
+                            if ($order->payment_method != 3) {
+                                $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
+                            }
 
                             // $profit = (($resell_info['price'] * $order_info['quantity']) - $product_info['price']) - $courir_charge;
                             $profit = ($order_info['total_amount'] - ($product_info['price'] * $order_info['quantity'])) ;
@@ -506,6 +531,33 @@ class OrderController extends Controller
                 }
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
+    public function setOrderHoldNotice(Request $request) {
+
+        $orderId = (is_null($request->orderId) || empty($request->orderId)) ? "" : $request->orderId;
+        $notice = (is_null($request->notice) || empty($request->notice)) ? "" : $request->notice;
+
+        if ($orderId == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Order Id is required.");
+        } else if ($notice == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Notice is required.");
+        } else {
+            try {
+                $orderInfo['orderId'] = $orderId;
+                $orderInfo['holdNotice'] = $notice;
+
+                $update_notice = $this->OrderEn->set_hold_notice_by_order($orderInfo);
+
+                if ($update_notice) {
+                    return $this->AppHelper->responseMessageHandle(1, "Operation Successfully.");
+                } else {
+                    return $this->AppHelper->responseMessageHandle(0, "Error Occured.");
+                }
+            } catch (Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, "Error Occured " . $e->getMessage());
             }
         }
     }

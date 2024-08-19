@@ -128,7 +128,12 @@ class InCourierDetailController extends Controller
                         $profitShareInfo['totalAmount'] = $order_info['total_amount'];
 
                         $is_city_colombo = $this->isCityinsideColombo($order_info['city']);
-                        $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
+
+                        $courir_charge = 0;
+                                
+                        if ($order->payment_method != 3) {
+                            $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
+                        }
 
                         // $profit = (($resell_info['price'] * $order_info['quantity']) - $product_info['price']) - $courir_charge;
                         $profit = ($order_info['total_amount'] - ($product_info['price'] * $order_info['quantity']));

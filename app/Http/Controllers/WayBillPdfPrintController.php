@@ -72,7 +72,6 @@ class WayBillPdfPrintController extends Controller
                             $dataList[$customerKey]['productName'][] = $this->Product->find_by_id($value2['product_id'])['product_name'];
                             $dataList[$customerKey]['quantity'] += $value2['quantity'];
                         } else {
-
                             $dataList[] = [
                                 'sellerName' => ($value2['reseller_id'] == 0) ? 'Direct purchase' : $this->Seller->find_by_id($value2['reseller_id'])['b_name'],
                                 'sellerMobile' => ($value2['reseller_id'] == 0) ? '0718858925' : $this->Seller->find_by_id($value2['reseller_id'])['phone_number'],
@@ -92,10 +91,13 @@ class WayBillPdfPrintController extends Controller
                         }
                     }
                 }
-                $fileName = "waybill";
-                $pdf = PDF::loadView('pdf.way_bill', array('data' => $dataList))->setPaper('a4', 'portrait');
 
-                return $pdf->stream($fileName . '.pdf');
+                $chunks = array_chunk($dataList, 3); // Split into chunks of 3
+
+                $pdf = PDF::loadView('pdf.way_bill', array('chunks' => $chunks))
+                    ->setPaper('a4', 'portrait');
+
+                return $pdf->stream('waybill.pdf');
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
             }
@@ -106,7 +108,7 @@ class WayBillPdfPrintController extends Controller
     {
         // You can add validation or authorization logic here if needed
         set_time_limit(300); // 300 seconds = 5 minutes
-        
+
         $selectedReportType = $request->input('selectedReportType');
         $token = $request->input('token');
         $typerepo = '';

@@ -75,3 +75,6 @@ Route::middleware('authToken')->post('update-courier-status', [InCourierDetailCo
 
 Route::middleware('authToken')->post('add-config', [ConfigsController::class, 'addNewConfig']);
 Route::middleware('authToken')->post('get-config-by-name', [ConfigsController::class, 'getConfigByName']);
+
+Route::middleware('authToken')->post('set-hold-notice', [OrderController::class, 'setOrderHoldNotice']);
+Route::middleware('authToken')->post('get-payout-summery', [PayoutLogController::class, 'getPayOutSummeryInfo']);

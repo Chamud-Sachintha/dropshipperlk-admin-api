@@ -159,4 +159,22 @@ class PayoutLogController extends Controller
             }
         }
     }
+
+    public function getPayOutSummeryInfo(Request $request) {
+        $resp = $this->Reseller->find_all();
+
+        $totalPayOutAmount = 0; $totalPendingAmount = 0;
+        foreach ($resp as $key => $value) {
+            $total_pay_out_amount = $this->PayOutLog->get_total_payout_by_seller($value['id']);
+
+            $totalPendingAmount += $value['profit_total'];
+            $totalPayOutAmount += $total_pay_out_amount;
+        }
+
+        $dataInfo = array();
+        $dataInfo['totalPauOutAmount'] = number_format($totalPayOutAmount, 2, '.', ',');
+        $dataInfo['totalPendingAmount'] = number_format($totalPendingAmount, 2, '.', ',');
+
+        return $this->AppHelper->responseEntityHandle(1, "Operation Successfully.", $dataInfo);
+    }
 }

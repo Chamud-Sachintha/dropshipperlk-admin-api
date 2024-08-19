@@ -19,6 +19,8 @@ class OrderEn extends Model
         'order_status',                         // 0 - pending 1- hold 2- packaging 3- cancel 4- in courier 5- delivered
         'tracking_number',
         'is_reseller_completed',
+        'remark',
+        'hold_notice',
         'create_time'
     ];
 
@@ -47,6 +49,13 @@ class OrderEn extends Model
         return $this->where($map)->update($map1);
     }
 
+    public function set_hold_notice_by_order($info) {
+        $map['id'] = $info['orderId'];
+        $map1['hold_notice'] = $info['holdNotice'];
+
+        return $this->where($map)->update($map1);
+    }
+ 
     public function update_pay_status_by_order($info) {
         $map['id'] = $info['orderId'];
         $map1['payment_status'] = $info['paymentStatus'];
@@ -71,6 +80,10 @@ class OrderEn extends Model
     public function update_order_status_by_order_bulk($info) {
         $map['order'] = $info['orderId'];
         $map1['order_status'] = $info['orderStatus'];
+
+        if ($info['holdNotice'] != null) {
+            $map1['hold_notice'] = $info['holdNotice'];
+        }
 
         return $this->where($map)->update($map1);
     }
