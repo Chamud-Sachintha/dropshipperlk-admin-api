@@ -57,6 +57,7 @@ class SimpleExcelExport implements FromCollection
             try {
                 $courier_info = $this->InCourier->find_by_order_id($order->order);
                 $resell_product_info = $this->ResellProduct->find_by_pid_and_sid($order->orderEn->reseller_id, $order->product->id);
+                $reseller_info = $this->Reseller->find_by_id($order->orderEn->reseller_id);
 
                 $product = $order->product;
                 $orderEn = $order->orderEn;
@@ -101,6 +102,7 @@ class SimpleExcelExport implements FromCollection
                 return [
                     'Order' => $order->order,
                     'Product Name' => $product->product_name,
+                    'Reseller Refferal' => $reseller_info->ref_code,
                     'Product Price' => $product->price,
                     'Delivery Charge' => '350',
                     'Seller Price' => $resell_product_info->price,
@@ -126,7 +128,7 @@ class SimpleExcelExport implements FromCollection
         })->filter(); // Filter out any null entries
 
         $headers = [
-            'Order ID', 'Product Name', 'Product Price', 'Delivery Charge', 'Seller Price', 'Tracking No', 'Courier Name', 'Order Status', 'Name', 'Address',
+            'Order ID', 'Product Name', 'Reseller Refferal', 'Product Price', 'Delivery Charge', 'Seller Price', 'Tracking No', 'Courier Name', 'Order Status', 'Name', 'Address',
             'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount', 'Order Return Status','WayBill'
         ];
 
