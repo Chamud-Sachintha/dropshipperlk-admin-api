@@ -64,3 +64,5 @@ Route::middleware('authToken')->post('get-product-delete-by-id', [ProductControl
 Route::middleware('authToken')->post('update-return-status', [OrderController::class, 'updateProductInfo']);
 Route::middleware('authToken')->post('get-all-ResellerUser', [AuthController::class, 'GetAllResellerUsers']);
 Route::middleware('authToken')->post('set-resetpass-ResellerUser', [AuthController::class, 'SetResetpassResellerUsers']);
+
+Route::middleware('authToken')->post('get-product-image-delete-by-id', [ProductController::class, 'getProductimagedeleteById']);
