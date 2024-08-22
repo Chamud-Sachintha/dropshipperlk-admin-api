@@ -47,6 +47,7 @@ class Product extends Model
         $map1['id'] = $productInfo['productId'];
         $map['product_name'] = $productInfo['productName'];
         $map['price'] = $productInfo['price'];
+        $map['images'] = $productInfo['images'];
         // $map['category'] = $productInfo['category'];
         // $map['team_commision'] = $productInfo['teamCommision'];
         // $map['direct_commision'] = $productInfo['directCommision'];
@@ -58,6 +59,13 @@ class Product extends Model
         $map['status'] = $productInfo['status'];
 
         return $this->where($map1)->update($map);
+    }
+
+    public function update_images_by_id($productInfo){
+        $map1['id'] = $productInfo['productId'];
+        $map['images'] = $productInfo['images'];
+        return $this->where($map1)->update($map);
+
     }
 
     public function find_by_p_name($pname) {

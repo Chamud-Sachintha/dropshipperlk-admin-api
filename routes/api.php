@@ -78,3 +78,5 @@ Route::middleware('authToken')->post('get-config-by-name', [ConfigsController::c
 
 Route::middleware('authToken')->post('set-hold-notice', [OrderController::class, 'setOrderHoldNotice']);
 Route::middleware('authToken')->post('get-payout-summery', [PayoutLogController::class, 'getPayOutSummeryInfo']);
+Route::middleware('authToken')->post('get-product-image-delete-by-id', [ProductController::class, 'getProductimagedeleteById']);
+Route::middleware('authToken')->post('get-profit-share-log-seller', [PayoutLogController::class, 'getProfitShareLogBySeller']);
