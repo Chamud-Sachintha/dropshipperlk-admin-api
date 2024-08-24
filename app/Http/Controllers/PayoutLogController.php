@@ -8,7 +8,11 @@ use App\Models\PayoutLog;
 use App\Models\ProfitShare;
 use App\Models\Reseller;
 use App\Models\BankDetails;
+use App\Models\OrderEn;
+use App\Models\Product;
+use Exception;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PayoutLogController extends Controller
 {
@@ -18,6 +22,8 @@ class PayoutLogController extends Controller
     private $Orders;
     private $ProfitShare;
     private $BankDetails;
+    private $Product;
+    private $OrderEn;
 
     public function __construct()
     {
@@ -27,6 +33,8 @@ class PayoutLogController extends Controller
         $this->Orders = new Order();
         $this->ProfitShare = new ProfitShare();
         $this->BankDetails = new BankDetails();
+        $this->OrderEn = new OrderEn();
+        $this->Product = new Product();
     }
 
     public function getPayOutInfoBySeller(Request $request) {
@@ -52,16 +60,20 @@ class PayoutLogController extends Controller
                 $dataList['branch_code'] = $Bankdata->branch_code ?? '';
                 $dataList['resellr_name'] = $Bankdata->resellr_name ?? '';
                 
-                
-
                 $all_log = $this->PayOutLog->find_all_by_seller($sellerId);
 
-                foreach ($all_log as $key => $value) {
-                    $dataList['list'][$key]['sellerName'] = $seller_info['full_name'];
-                    $dataList['list'][$key]['beforeBalance'] = $value['before_balance'];
-                    $dataList['list'][$key]['payOutAmount'] = $value['pay_out_amount'];
-                    $dataList['list'][$key]['currentBalance'] = $value['current_balance'];
-                    $dataList['list'][$key]['createDate'] = $value['create_time'];
+                $dataList['list'] = [];
+
+                if (!empty($all_log)) {
+                    foreach ($all_log as $key => $value) {
+                        $dataList['list'][$key] = [
+                            'sellerName' => $seller_info['full_name'],
+                            'beforeBalance' => $value['before_balance'],
+                            'payOutAmount' => $value['pay_out_amount'],
+                            'currentBalance' => $value['current_balance'],
+                            'createDate' => $value['create_time']
+                        ];
+                    }
                 }
                 
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
@@ -156,6 +168,95 @@ class PayoutLogController extends Controller
                 }
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
+    public function getPayOutSummeryInfo(Request $request) {
+        $resp = $this->Reseller->find_all();
+
+        $totalPayOutAmount = 0; $totalPendingAmount = 0;
+        foreach ($resp as $key => $value) {
+            $total_pay_out_amount = $this->PayOutLog->get_total_payout_by_seller($value['id']);
+
+            $totalPendingAmount += $value['profit_total'];
+            $totalPayOutAmount += $total_pay_out_amount;
+        }
+
+        $dataInfo = array();
+        $dataInfo['totalPauOutAmount'] = number_format($totalPayOutAmount, 2, '.', ',');
+        $dataInfo['totalPendingAmount'] = number_format($totalPendingAmount, 2, '.', ',');
+
+        return $this->AppHelper->responseEntityHandle(1, "Operation Successfully.", $dataInfo);
+    }
+
+    public function getProfitShareLogBySeller(Request $request) {
+
+        $resellerId = (is_null($request->sellerId) || empty($request->sellerId)) ? "" : $request->sellerId;
+
+        if ($resellerId == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Invalid Reseller ID");
+        } else {
+            try {
+                $seller_info = $this->Reseller->find_by_id($resellerId);
+                $resp = $this->ProfitShare->get_log_by_seller($seller_info['id']);
+
+                $dataList = array();
+                foreach ($resp as $key => $value) {
+                    $product_info = $this->Product->find_by_id($value['product_id']);
+                    $order_info = null;
+                    if($value['order_id'] != 0){
+                        $order_info = $this->Orders->find_by_id($value['order_id']);
+                        $dataList[$key]['orderNumber'] =  $order_info['order'];
+                    }
+                    else{
+                        
+                        $dataList[$key]['orderNumber'] =  "-";
+                    }
+
+                   
+
+                    if ($value['product_id'] != 0) {
+                      //  $dataList[$key]['productName'] = $product_info['product_name'];
+                      $dataList[$key]['productName'] = $product_info['product_name'];
+                    } else {
+                        $dataList[$key]['productName'] = 0;
+                    }
+
+                    if ($value['type'] == 1) {
+                        $dataList[$key]['logType'] = "Transfer In";
+                    } else {
+                        $dataList[$key]['logType'] = "Transfer Out";
+                    }
+
+                    if ($product_info != null) {
+                        $dataList[$key]['productPrice'] = $product_info['price'];
+                    } else {
+                        $dataList[$key]['productPrice'] = "Not Found";
+                    }
+
+                    $dataList[$key]['deliveryCharge'] = 0;
+
+                    if ($order_info != null) {
+                        $orderEnInfo = $this->OrderEn->getOrderInfoByOrderNumber($order_info['order']);
+
+                        if ($orderEnInfo['payment_method'] != 3) {
+                            $dataList[$key]['deliveryCharge'] = 350;
+                        }
+                    }
+
+                    $dataList[$key]['resellPrice'] = $value['resell_price'];
+                    $dataList[$key]['quantity'] = $value['quantity'];
+                    $dataList[$key]['totalAmount'] = $value['total_amount'];
+                    $dataList[$key]['profit'] = $value['profit'];
+                    $dataList[$key]['directCommision'] = $value['direct_commision'];
+                    $dataList[$key]['teamCommision'] = $value['team_commision'];
+                    $dataList[$key]['profitTotal'] = $value['profit_total'];
+                }
+
+                return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
+            } catch (Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, "Error Occure " . $e->getMessage());
             }
         }
     }

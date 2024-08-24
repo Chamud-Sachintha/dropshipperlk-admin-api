@@ -34,6 +34,12 @@ class Order extends Model
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    public function find_by_id($oid) {
+        $map['id'] = $oid;
+
+        return $this->where($map)->first();
+    }
+
     public function orderEn()
     {
         return $this->hasOne(OrderEn::class, 'order', 'order');

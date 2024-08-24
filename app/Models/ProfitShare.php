@@ -56,4 +56,10 @@ class ProfitShare extends Model
         
         return $this->sum('profit_total');
     }
+
+    public function get_log_by_seller($seller) {
+        $map['reseller_id'] = $seller;
+
+        return $this->where($map)->orderBy('create_time', 'desc')->get();
+    }
 }

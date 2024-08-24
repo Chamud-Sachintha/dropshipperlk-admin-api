@@ -47,6 +47,7 @@ class BulkOrderUpdateController extends Controller
     public function updateBulkOrder(Request $request) {
         $orderNumbersList = (is_null($request->orderNumbers) || empty($request->orderNumbers)) ? "" : $request->orderNumbers;
         $orderStatus = (is_null($request->orderStatus) || empty($request->orderStatus)) ? "" : $request->orderStatus;
+        $holdNotice = (is_null($request->holdNotice) || empty($request->holdNotice)) ? null : $request->holdNotice;
 
         if ($orderNumbersList == "") {
             return $this->AppHelper->responseMessageHandle(0, "Order Numbers are Empty.");
@@ -58,6 +59,12 @@ class BulkOrderUpdateController extends Controller
                     $info = array();
                     $info['orderId'] = $eachOrder;
                     $info['orderStatus'] = $orderStatus;
+
+                    $info['holdNotice'] = null;
+
+                    if ($holdNotice != "") {
+                        $info['holdNotice'] = $holdNotice;
+                    }
     
                     // $resp = $this->Order->update_order_status_by_order($info);
                     $resp = $this->OrderEn->update_order_status_by_order_bulk($info);
@@ -84,7 +91,12 @@ class BulkOrderUpdateController extends Controller
                                 $profitShareInfo['totalAmount'] = $order_info['total_amount'];
     
                                 $is_city_colombo = $this->isCityinsideColombo($order_info['city']);
-                                $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
+
+                                $courir_charge = 0;
+                                
+                                if ($order->payment_method != 3) {
+                                    $courir_charge = $this->getCourierCharge($is_city_colombo, $product_info['weight']);
+                                }
     
                                 // $profit = (($resell_info['price'] * $order_info['quantity']) - $product_info['price']) - $courir_charge;
                                 $profit = ($order_info['total_amount'] - ($product_info['price'] * $order_info['quantity'])) ;

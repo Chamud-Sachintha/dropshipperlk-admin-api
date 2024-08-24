@@ -9,6 +9,7 @@ use App\Models\OrderEn;
 use App\Models\OrderCancle;
 use App\Models\BankDetails;
 use App\Models\InCourierDetail;
+use App\Models\ResellProduct;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -25,6 +26,7 @@ class SimpleExcelExport implements FromCollection
     private $Orders;
     private $Reseller;
     private $InCourier;
+    private $ResellProduct;
 
     public function __construct($selectedReportType)
     {
@@ -32,6 +34,7 @@ class SimpleExcelExport implements FromCollection
         $this->Orders = new Order();
         $this->Reseller = new Reseller();
         $this->InCourier = new InCourierDetail();
+        $this->ResellProduct = new ResellProduct();
     }
 
     public function collection()
@@ -53,12 +56,21 @@ class SimpleExcelExport implements FromCollection
         $dataArray = $orders->map(function ($order) {
             try {
                 $courier_info = $this->InCourier->find_by_order_id($order->order);
+                $resell_product_info = $this->ResellProduct->find_by_pid_and_sid($order->orderEn->reseller_id, $order->product->id);
+                $reseller_info = $this->Reseller->find_by_id($order->orderEn->reseller_id);
+
                 $product = $order->product;
                 $orderEn = $order->orderEn;
 
                 $prefix = substr($order->city, 0, 3);
                 $is_colombo = $prefix === "Col";
-                $courier_charge = $this->getCourierCharge($is_colombo, $product->weight);
+
+                $courier_charge = 0;
+                
+                if ($order->orderEn->payment_method != 3) {
+                    $courier_charge = $this->getCourierCharge($is_colombo, $product->weight);
+                }
+
                 $fullAmount = $order->total_amount + $courier_charge;
 
                 $statusMapping = [
@@ -90,6 +102,10 @@ class SimpleExcelExport implements FromCollection
                 return [
                     'Order' => $order->order,
                     'Product Name' => $product->product_name,
+                    'Reseller Refferal' => $reseller_info->ref_code,
+                    'Product Price' => $product->price,
+                    'Delivery Charge' => '350',
+                    'Seller Price' => $resell_product_info->price,
                     'Tracking No' => $orderEn->tracking_number,
                     'Courier Name' => $orderEn->courier_name,
                     'Order Status' => $status,
@@ -112,7 +128,7 @@ class SimpleExcelExport implements FromCollection
         })->filter(); // Filter out any null entries
 
         $headers = [
-            'Order ID', 'Product Name', 'Tracking No', 'Courier Name', 'Order Status', 'Name', 'Address',
+            'Order ID', 'Product Name', 'Reseller Refferal', 'Product Price', 'Delivery Charge', 'Seller Price', 'Tracking No', 'Courier Name', 'Order Status', 'Name', 'Address',
             'City', 'District', 'Contact 1', 'Contact 2', 'Quantity', 'Total Amount', 'Order Return Status','WayBill'
         ];
 

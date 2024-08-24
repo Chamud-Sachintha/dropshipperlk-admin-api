@@ -184,8 +184,23 @@ class ProductController extends Controller
                 $dataList['productName'] = $resp['product_name'];
                 $dataList['description'] = $resp['description'];
                 $dataList['price'] = $resp['price'];
+                $dataList['stockCount'] = $resp['stock_count'];
                 $dataList['status'] = $resp['status'];
-
+                $category_info = $this->Category->find_by_id($resp['category']);
+                $dataList['categoryName'] = $category_info['category_name'];
+                $decodedImages = json_decode($resp['images']);
+                
+                
+                if ($decodedImages && isset($decodedImages->image0) && !empty($decodedImages->image0)){
+                    // Assign the first image URL to $dataList[$key]['image']
+                   // DD(json_decode($resp['images']));
+                    foreach ($decodedImages as $key => $image) {
+                    $dataList['image'][$key] = $image;
+                    }
+                } else {
+                    // Set $dataList[$key]['image'] to an empty string
+                    $dataList['image'] = '';
+                }
                 return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $dataList);
             } catch (\Exception $e) {
                 return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
@@ -206,7 +221,8 @@ class ProductController extends Controller
         $weight = (is_null($request->weight) || empty($request->weight)) ? "" : $request->weight;
         $supplierName = (is_null($request->supplierName) || empty($request->supplierName)) ? "" : $request->supplierName;
         $status = (is_null($request->status) || empty($request->status)) ? "" : $request->status;
-
+        $imageList = $request->files;
+        $resultArray = [];
         if ($productName == "") {
             return $this->AppHelper->responseMessageHandle(0, "Product Name is required.");
         } else if ($price == "") {
@@ -226,12 +242,40 @@ class ProductController extends Controller
         } else {
 
             try {
-                // $isValidCategory = $this->validateCategory($category);
+                $productImages = $this->Product->find_by_id($productId);
+                $jsonData = $productImages['images'];
 
-                // if ($isValidCategory) {
-                    
-                // }
+                if($imageList){
+                    $imageListData = array();
+                    foreach ($imageList as $key => $value) {
+                        $uniqueId = uniqid();
+                        $ext = $value->getClientOriginalExtension();
 
+                        $value->move(public_path('/images'), $uniqueId . '.' . $ext);
+                        $imageListData[$key] = $uniqueId . '.' . $ext;
+                    }
+                }
+                
+                if($jsonData && $imageList){
+                    $imageData = json_decode($jsonData, true);
+                   
+                    foreach ($imageData as $key => $value) {
+                        $resultArray[$key] = $value;
+                    }
+                    $index = count($imageData); 
+                    foreach ($imageListData as $key => $value) {
+                        $resultArray["image" . ($index++)] = $value;
+                    }
+                  //  DD($resultArray);
+
+                    $encodeImage =  json_encode($resultArray);
+                }
+                else{
+                    $encodeImage =  json_encode($imageListData);
+                }
+
+
+               
                 $productInfo = array();
                     $productInfo['productId'] = $productId;
                     $productInfo['productName'] = $productName;
@@ -245,6 +289,7 @@ class ProductController extends Controller
                     $productInfo['weight'] = $weight;
                     $productInfo['supplierName'] = $supplierName;
                     $productInfo['status'] = $request->status;
+                    $productInfo['images'] = $encodeImage;
 
                     $resp = $this->Product->update_by_id($productInfo);
 
@@ -293,18 +338,18 @@ class ProductController extends Controller
             try {
 
                 if($ordecheck){
-                    return $this->AppHelper->responseEntityHandle(0, "Product is already in Order. Can't Delete");
+                    return $this->AppHelper->responseMessageHandle(0, "Product is already in Order. Can't Delete");
                 }
                 else{
                     $productImages = $this->Product->find_by_id($productId);
 
                     $jsonData = $productImages['images'];
                     $imageData = json_decode($jsonData, true);
-                    $imageDirectory = public_path('/images');
+                    $imageDirectory = public_path('\images');
     
                     foreach ($imageData as $key => $filename) {
                        
-                        $imageFilePath = $imageDirectory . '/' . $filename;
+                        $imageFilePath = $imageDirectory . '\\' . $filename;
                        
                         if (file_exists($imageFilePath)) {
                             unlink($imageFilePath);
@@ -318,6 +363,51 @@ class ProductController extends Controller
                   
                     return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $resp);
                 }
+               
+               
+    
+            } catch (\Exception $e) {
+                return $this->AppHelper->responseMessageHandle(0, $e->getMessage());
+            }
+        }
+    }
+
+    public function getProductimagedeleteById(Request $request){
+        $Imagename = (is_null($request->imageId) || empty($request->imageId)) ? "" : $request->imageId;
+        $productId = (is_null($request->productId) || empty($request->productId)) ? "" : $request->productId;
+    
+        if ($productId == "") {
+            return $this->AppHelper->responseMessageHandle(0, "Token is required.");
+        }
+         else {
+               
+            try {
+
+                
+                    $productImages = $this->Product->find_by_id($productId);
+
+                    $jsonData = $productImages['images'];
+                    $imageData = json_decode($jsonData, true);
+                   
+                    $imageData = array_filter($imageData, function ($image) use ($Imagename) {
+                        return $image !== $Imagename;
+                    });
+                  
+                    $imageDirectory = public_path('\images');                       
+                    $imageFilePath = $imageDirectory . '\\' . $Imagename;
+                       
+                        if (file_exists($imageFilePath)) {
+                            unlink($imageFilePath);
+                            echo "Deleted: " . $imageFilePath . "\n";
+                        } else {
+                            echo "File not found: " . $imageFilePath . "\n";
+                        }
+                        $productInfo['images'] = json_encode($imageData);
+                        $productInfo['productId'] = $productId;
+                       // DD($productInfo);
+                        $resp = $this->Product->update_images_by_id($productInfo);
+                  
+                    return $this->AppHelper->responseEntityHandle(1, "Operation Complete", $resp);
                
                
     
