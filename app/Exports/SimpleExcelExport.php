@@ -102,7 +102,7 @@ class SimpleExcelExport implements FromCollection
                 return [
                     'Order' => $order->order,
                     'Product Name' => $product->product_name,
-                    'Reseller Refferal' => $reseller_info->ref_code,
+                    'Reseller Refferal' => $reseller_info->code,
                     'Product Price' => $product->price,
                     'Delivery Charge' => '350',
                     'Seller Price' => $resell_product_info->price,
