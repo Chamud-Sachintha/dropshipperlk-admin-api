@@ -57,6 +57,7 @@ class Product extends Model
         // $map['weight'] = $productInfo['weight'];
         // $map['supplier_name'] = $productInfo['supplierName'];
         $map['status'] = $productInfo['status'];
+        $map['stock_count'] = $productInfo['stockCount'];
 
         return $this->where($map1)->update($map);
     }

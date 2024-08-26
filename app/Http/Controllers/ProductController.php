@@ -221,24 +221,15 @@ class ProductController extends Controller
         $weight = (is_null($request->weight) || empty($request->weight)) ? "" : $request->weight;
         $supplierName = (is_null($request->supplierName) || empty($request->supplierName)) ? "" : $request->supplierName;
         $status = (is_null($request->status) || empty($request->status)) ? "" : $request->status;
+
+        $stockCount = (is_null($request->stockCount) || empty($request->stockCount)) ? "" : $request->stockCount;
+
         $imageList = $request->files;
         $resultArray = [];
         if ($productName == "") {
             return $this->AppHelper->responseMessageHandle(0, "Product Name is required.");
         } else if ($price == "") {
             return $this->AppHelper->responseMessageHandle(0, "Price is required.");
-        // } else if ($category == "") {
-        //     return $this->AppHelper->responseMessageHandle(0, "Category is required.");
-        // } else if ($teamCommision == "") {
-        //     return $this->AppHelper->responseMessageHandle(0, "Team Commision is required.");
-        // } else if ($directCommsion == "") {
-        //     return $this->AppHelper->responseMessageHandle(0, "Direct Commision is required.");
-        // } else if ($waranty == "") {
-        //     return $this->AppHelper->responseMessageHandle(0, "waranty is required.");
-        // } else if ($description == "") {
-        //     return $this->AppHelper->responseMessageHandle(0, "description is required.");
-        // } else if ($supplierName == "") {
-        //     return $this->AppHelper->responseMessageHandle(0, "supplier Name is required.");
         } else {
 
             try {
@@ -290,6 +281,7 @@ class ProductController extends Controller
                     $productInfo['supplierName'] = $supplierName;
                     $productInfo['status'] = $request->status;
                     $productInfo['images'] = $encodeImage;
+                    $productInfo['stockCount'] = $stockCount;
 
                     $resp = $this->Product->update_by_id($productInfo);
 
