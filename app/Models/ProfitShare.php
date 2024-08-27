@@ -60,6 +60,6 @@ class ProfitShare extends Model
     public function get_log_by_seller($seller) {
         $map['reseller_id'] = $seller;
 
-        return $this->where($map)->orderBy('create_time', 'desc')->get();
+        return $this->where($map)->orderBy('id', 'desc')->get();
     }
 }
