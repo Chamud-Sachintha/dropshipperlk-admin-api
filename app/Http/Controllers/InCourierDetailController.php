@@ -316,7 +316,7 @@ class InCourierDetailController extends Controller
             7 => 'Complete',
             8 => 'Settled',
             9 => 'Return Received',
-            10 => 'Ready to Change',
+            10 => 'Rider Assigned',
             11 => 'Rescheduled',
             6 => 'Return Order'
         ];
