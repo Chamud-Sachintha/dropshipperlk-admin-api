@@ -14,6 +14,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SiteBannerController;
 use App\Http\Controllers\WayBillPdfPrintController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -80,3 +81,7 @@ Route::middleware('authToken')->post('set-hold-notice', [OrderController::class,
 Route::middleware('authToken')->post('get-payout-summery', [PayoutLogController::class, 'getPayOutSummeryInfo']);
 Route::middleware('authToken')->post('get-product-image-delete-by-id', [ProductController::class, 'getProductimagedeleteById']);
 Route::middleware('authToken')->post('get-profit-share-log-seller', [PayoutLogController::class, 'getProfitShareLogBySeller']);
+
+Route::get('clear-cache', function() {
+    Artisan::call('config:clear');
+});
