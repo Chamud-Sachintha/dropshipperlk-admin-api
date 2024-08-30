@@ -177,8 +177,9 @@ class BulkOrderUpdateController extends Controller
 
         $rangeValue = explode("-", $config_info->value);
         $finalWayBillNumber = null;
+
         while (true) {
-            $wayBillNumber = rand($rangeValue[0], $rangeValue[1]);
+            $wayBillNumber = rand(trim($rangeValue[0]), trim($rangeValue[1]));
             $isBillAlreadyHave = $this->InCourierDetail->find_by_wayBill($wayBillNumber);
 
             if ($isBillAlreadyHave != null) {
@@ -188,6 +189,14 @@ class BulkOrderUpdateController extends Controller
                 break;
             }
         }
+
+        $rangeCount = $this->Configs->find_by_config("wayBillRangeCount");
+
+        $configInfo['configName'] = "wayBillRangeCount";
+        $configInfo['configValue'] = ($rangeCount->value - 1);
+        $configInfo['createTime'] = $this->AppHelper->day_time();
+
+        $this->Configs->add_log($configInfo);
 
         return $finalWayBillNumber;
     }
